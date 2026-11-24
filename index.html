@@ -57,6 +57,8 @@ body.hurt #app{animation:hurt .35s}
 #dpad button{background:#0b1736cc;border:3px solid var(--wh);font-size:24px;color:#fff;touch-action:none}
 #dpad button:active{background:var(--sky)}
 #dpad .c{visibility:hidden}
+#fBtn{position:absolute;left:216px;bottom:22px;width:86px;height:86px;border-radius:50%;background:rgba(255,210,63,.3);border:3px solid rgba(255,255,255,.75);color:#fff;font-size:30px;z-index:6;text-shadow:2px 2px 0 #1a1c2c;touch-action:none;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+#fBtn small{font-size:13px;margin-top:4px}#fBtn:active{background:rgba(255,210,63,.75)}
 
 /* Dialog */
 #dlg{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);width:min(960px,96%);padding:12px 16px;display:none;gap:14px;z-index:20}
@@ -157,6 +159,7 @@ body.hurt #app{animation:hurt .35s}
 .field.port{background:linear-gradient(#73eff7 0 55%,#257179 55% 100%)}
 .field.exam{background:linear-gradient(#b8a0d8 0 55%,#8d6e4c 55% 100%)}
 .field.grass{background:linear-gradient(#73eff7 0 55%,#3e8948 55% 100%)}
+.field.forest{background:linear-gradient(#2f6b3a 0 55%,#1f4d2a 55% 100%)}.field.beach{background:linear-gradient(#73c2ff 0 40%,#3b8fd6 40% 55%,#f2d98d 55% 100%)}
 .field.tower{background:linear-gradient(#29104a 0 55%,#4b3b5c 55% 100%)}
 .field::after{content:'';position:absolute;left:0;right:0;top:55%;height:8px;background:#0003}
 .est{position:absolute;left:3%;top:5%;width:min(330px,44%);padding:8px 12px;z-index:2}
@@ -211,12 +214,18 @@ body[data-zone=boss] #mini{background:radial-gradient(circle at 50% 30%,#4b2a7a,
 .fleg{font-size:15px;line-height:1.7;text-align:left;word-break:keep-all}
 .tbar{grid-column:1/-1;position:relative;height:34px;background:#29366f;border:3px solid var(--wh)}.tz{position:absolute;top:0;bottom:0;width:20%;background:#38b764bb}.tc{position:absolute;top:0;bottom:0;width:4%;background:#ffd23f}.tm{position:absolute;top:-6px;width:8px;height:40px;background:#ff5a5a;border:2px solid #fff;transform:translateX(-50%)}
 .cmd.ult{background:linear-gradient(90deg,#ff6b9a,#ffd23f);color:var(--ink);border-color:var(--yel)}.cmd.ult:disabled{background:var(--navy);color:#fff}
+.cmd.blur{filter:blur(6px)}
 .cmd.tnow{background:var(--red);font-size:20px}
 .eint{margin-top:6px;font-size:15px;color:#fff;background:#e74c3c;padding:3px 8px;border:2px solid var(--ink);word-break:keep-all;animation:blink .8s steps(2) infinite}.eint:empty{display:none}
 .pst .gb{height:8px;margin-top:4px}.pst .gb i{background:linear-gradient(90deg,#ff6b9a,#ffd23f)}
 .enemy.twin{filter:drop-shadow(-80px 12px 0 rgba(155,107,255,.85))}
+.enemy.megab{width:clamp(200px,30vw,330px);top:2%;right:8%}
+.party img.sup{animation:supIn .5s steps(5)}@keyframes supIn{from{transform:translateY(-80px);opacity:0}}
+.mega-in{animation:megaIn 1.6s steps(8) forwards}@keyframes megaIn{from{transform:scale(.2);filter:brightness(4)}to{transform:scale(1)}}
 .enemy.rage{filter:drop-shadow(0 0 14px #ff3b3b) hue-rotate(-40deg) saturate(1.6);transform:scale(1.12)}
 .field.rage{background:linear-gradient(#5a0f1c 0 55%,#2b1b3d 55% 100%)!important}
+.shopi.rec{border-color:var(--yel);background:#3d3a1a}.rtag{background:var(--yel);color:var(--ink);font-size:12px;padding:0 4px}
+.tipbox{background:#1d2a55;border:2px dashed var(--yel);padding:8px 12px;font-size:15px;line-height:1.6;text-align:left;margin:6px 0;word-break:keep-all}
 /* Ending */
 #end{overflow-y:auto;justify-content:center;align-items:flex-start;padding:16px 12px 40px;background:repeating-linear-gradient(0deg,#1b2a55 0 8px,#1f3060 8px 16px)}
 .ebox{width:min(760px,100%);padding:18px 22px;display:flex;flex-direction:column;gap:8px}
@@ -252,7 +261,7 @@ body[data-zone=boss] #mini{background:radial-gradient(circle at 50% 30%,#4b2a7a,
   <b id="hLv">Lv.1</b><span class="bar" id="hXp"><i></i></span>
   <span id="hCoin">🪙 0</span>
   <span id="hGoal"></span>
-  <button class="hb" id="hMenu" style="display:none">🎮</button><button class="hb" id="hLook">👆 살펴보기</button><button class="hb" id="hBag">🎒 가방</button>
+  <button class="hb" id="hMenu" style="display:none">🎮</button><button class="hb" id="hBag">🎒 가방</button>
   <button class="hb" id="hSnd">🔊</button>
   <button class="hb" id="hRe">↺</button>
  </div>
@@ -267,6 +276,7 @@ body[data-zone=boss] #mini{background:radial-gradient(circle at 50% 30%,#4b2a7a,
   </section>
   <section class="screen" id="world"><canvas id="cv"></canvas>
    <div id="dpad"><button class="c"></button><button data-d="0,-1">▲</button><button class="c"></button><button data-d="-1,0">◀</button><button class="c"></button><button data-d="1,0">▶</button><button class="c"></button><button data-d="0,1">▼</button><button class="c"></button></div>
+   <button id="fBtn">F<small>살펴보기</small></button>
   </section>
   <section class="screen" id="mini"></section>
   <section class="screen" id="battle"></section>
@@ -308,6 +318,12 @@ const RAW={
  slime:["................","................","................","................","......oooo......","....ooSSSSoo....","...oSSWSSSSSo...","..oSSWWSSSSSSo..","..oSSSSSSSSSSo..",".oSSSkSSSSkSSSo.",".oSSSkSSSSkSSSo.",".oSSSSSmmSSSSSo.",".oSSSSSSSSSSSSo.","..oDDDDDDDDDDo..","...oooooooooo...","................"],
  bat:["................","................","................","o.....o..o.....o","oo...oBooBo...oo","oBo..oBBBBo..oBo","oBBooBRBBRBooBBo","oBBBBBBBBBBBBBBo",".oBBBBwBBwBBBBo.","..ooBBBBBBBBoo..","....ooBBBBoo....","......oooo......","................","................","................","................"],
  mush:["................","................",".....oooooo.....","...ooRRRRRRoo...","..oRRwwRRRRwRo..",".oRRRwwRRRRRRRo.",".oRRRRRRRwwRRRo.",".oooooooooooooo.","....oSSSSSSo....","....oSkSSkSo....","....oSSSSSSo....","....oSSmmSSo....",".....oooooo.....","................","................","................"],
+ owl:["................","..oo........oo..","..oBoooooooooBo.","..oBBBBBBBBBBBo.","..oBwwwBBBwwwBo.","..oBwkwBBBwkwBo.","..oBwwwBYBwwwBo.","..oBBBBBYBBBBBo.","...oBLLLLLLLBo..","...oBLlLlLlLBo..","...oBLLLLLLLBo..","....oBBBBBBBo...",".....YY...YY....","................","................","................"],
+ jelly:["................",".....oooooo.....","...ooJJJJJJoo...","..oJJwJJJJJJJo..","..oJwJJJJJJJJo..","..oJJkJJJJkJJo..","..oJJJJJmmJJJo..","..oooooooooooo..","...T.T.T.T.T....","...T.T.T.T.T....","....T.T.T.T.....","....T.T.T.T.....","................","................","................","................"],
+ rat:["................","................","..oo......oo....",".oRRo....oRRo...","..oGGGGGGGGo....",".oGGGGGGGGGGo...",".oGGkGGGGkGGo...",".oGGGGGPPGGGo...","..oGGwwwwGGo....","...oGGGGGGo.....","..oGGGGGGGGo....","..oGGGGGGGGo..TT","...oooooooo.TT..","....oo..oo......","................","................"],
+ parrot:["................",".....oooo.......","....oGGGGo......","...oGGwkGGo.....","...oGGGGGYYo....","...oGGGGGoYo....","....oGGGGo......","...oRRGGGGo.....","..oRRRGGGGGo....","..oRRRRGGGGo....","...oRRRRGGGo....","....oBBBBBo.....",".....oBoBo......","......Y..Y......","................","................"],
+ spider:["......oooo......",".....oPPPPo.....",".....oPwwPo.....","......oPPo......",".......oo.......","o..o.oooooo.o..o",".o..oSSSSSSo..o.","..ooSSRSSRSSoo..","oooSSSSSSSSSSooo","..oSSSSSSSSSSo..",".o.oSSSSSSSSo.o.","o...oooooooo...o","................","................","................","................"],
+ ghost:["................",".....oooooo.....","...ooWWWWWWoo...","..oWWWWWWWWWWo..","..oWWkkWWkkWWo..","..oWWkkWWkkWWo..","..oWWWWWWWWWWo..","..oWWWWooWWWWo..","..oWWWWWWWWWWo..","..oWWWWWWWWWWo..","..oWWWWWWWWWWo..","..oWWoWWWoWWWo..","..o.oo.oo.oo.o..","................","................","................"],
  sign:["................","..oooooooooooo..","..oWWWWWWWWWWo..","..oWkkWkkkWkWo..","..oWWWWWWWWWWo..","..oWkkkWkkWkWo..","..oWWWWWWWWWWo..","..oooooooooooo..",".......oPPo.....",".......oPPo.....",".......oPPo.....",".......oPPo.....",".......oPPo.....",".......oPPo.....","......oooooo....","................"],
  piece:["................","................",".....oooooo.....","....oCCCCCCo....","...oCCwwCCCCo...","..ooCwCCCCCCoo..","..oCCCCkkCCCCo..","..ooCCCkkCCCoo..","...oCCCCCCCCo...","....oCCCCCCo....",".....oooooo.....","................","................","................","................","................"],
  arrow:["..oooo..","..oRRo..","..oRRo..","oooRRooo",".oRRRRo.","..oRRo..","...oo..."],
@@ -315,8 +331,11 @@ const RAW={
  check:["........","......oo",".....ogo","o...ogo.","ogo.ogo.",".ogogo..","..ogo...","...o...."]
 };
 const SPR={};
+const HB=top4(HUMAN,{4:"...ohhhhhhhho...",5:"...ohhhhhhhho...",6:"...ohhhhhhhho...",7:"....ohhhhhho...."}),HS=top4(HUMAN,{4:"...ohhhssssso...",5:"...ohhsssseso...",6:"...ohhsssrsmo...",7:"....ohsssssso..."});
+const RB=top4(ROBOT,{5:"..ommmmmmmmmmo..",6:"..ommdmmmmdmmo..",7:"..ommmmmmmmmmo..",11:"...ommmmmmmmo..."}),RS=top4(ROBOT,{5:"..ommmmmvvvvmo..",6:"..ommmmmvvvlmo..",7:"..ommmmmvvvvmo.."});
+function top4(rows,o){return rows.map((r,i)=>o[i]||r)}
 function initSprites(){
- const H=(p,t)=>mk(t?topRows(HUMAN,t):HUMAN,p), R=p=>mk(ROBOT,p);
+ const H=(p,t)=>{const c=mk(t?topRows(HUMAN,t):HUMAN,p);c.u=mk(t?topRows(HB,t):HB,p);c.s=mk(t?topRows(HS,t):HS,p);return c}, R=p=>{const c=mk(ROBOT,p);c.u=mk(RB,p);c.s=mk(RS,p);return c};
  SPR.hero=H({h:'#2b6fd6',t:'#41a6f6',p:'#1e3a6e',C:'#1e3a6e'},[,,,,"..oCCCCCCCCCCo.."]);
  SPR.zero=H({h:'#f5c542',t:'#9b59d0',p:'#2c2c54'},["....y..yy..y....","....yyyyyyyy...."]);
  SPR.noroul=H({h:'#eeeeee',t:'#7b3fb5',e:'#9b6bff',p:'#3d2a5c'},["...o.o.oo.o.o...","..ohohhhhhhoho.."]);
@@ -339,11 +358,17 @@ function initSprites(){
  SPR.batC=mk(RAW.bat,{B:'#3d2a5c',R:'#ff5a5a'});SPR.batS=mk(RAW.bat,{B:'#6b7f99',R:'#ffd23f'});SPR.mush=mk(RAW.mush,{R:'#d64545',S:'#f5e6c8'});
  SPR.goblin=mk(HUMAN,{s:'#7ccf5a',h:'#3d2a1d',t:'#8b5a2b',p:'#5d4037',e:'#e74c3c',r:'#5aa33a',m:'#2a5a1a'});
  SPR.fake=mk(RAW.fire,{Y:'#d0a8ff',O:'#9b59d0',R:'#6b2fb5',W:'#f0e0ff'});
+ SPR.owl=mk(RAW.owl,{B:'#7b5ea7',L:'#d9c09a',l:'#b0926a',Y:'#ffb000'});SPR.jellyM=mk(RAW.jelly,{J:'#7fd8ff',T:'#c39bff'});SPR.rat=mk(RAW.rat,{G:'#9aa3ad',R:'#ff9ec7',P:'#ff6b9a',T:'#ff9ec7'});
+ SPR.parrot=mk(RAW.parrot,{G:'#38b764',R:'#e74c3c',B:'#41a6f6',Y:'#ffb000'});SPR.spider=mk(RAW.spider,{S:'#5a4a7a',R:'#ff5a5a',P:'#e74c3c'});SPR.ghost=mk(RAW.ghost,{W:'#e8f0ff'});
+ SPR.gacha=mk(RAW.mimic,{B:'#ff6b9a',Y:'#ffd23f',R:'#41a6f6'});SPR.tattat=R({m:'#7f8c8d',v:'#2c3e50',l:'#ff5a5a',a:'#e74c3c',d:'#555555'});
+ SPR.gamez=mk(topRows(HUMAN,[,".....oooooo.....","....oKhhhhKo....","...oKhhhhhhKo...",,".KKossessessoKK."]),{s:'#9fd08a',h:'#2a2a2a',t:'#3b5bdb',p:'#2c2c54',e:'#ff5a5a',r:'#7cb86a',m:'#3d2a1d',K:'#e74c3c'});
+ SPR.megabot=R({m:'#5b3f7a',v:'#1a1424',l:'#ff3b3b',a:'#ff3b3b',d:'#ffd23f'});
+ SPR.bully=mk(HUMAN,{s:'#4b4060',h:'#1a1424',t:'#2b2440',p:'#1a1424',e:'#ff5a5a',r:'#4b4060',m:'#ff5a5a',b:'#1a1424'});
  SPR.sign=mk(RAW.sign,{W:'#f5e6c8',P:'#8b5a2b'});SPR.piece=mk(RAW.piece,{C:'#41f0e0'});
  SPR.fireB=mk(RAW.fire,{Y:'#bfe8ff',O:'#41a6f6',R:'#2b4fd6',W:'#ffffff'});SPR.fireO=mk(RAW.fire,{Y:'#ffd23f',O:'#ff6a00',R:'#c0392b',W:'#ffe08a'});SPR.fireG=mk(RAW.fire,{Y:'#fff6b0',O:'#ffd23f',R:'#e6a800',W:'#ffffff'});
- SPR.fisher=mk(HUMAN,{h:'#e8c25a',t:'#3b8fd6',p:'#2c3e50'});SPR.teacher=mk(topRows(HUMAN,[,,,,,"...okwkskwkso..."]),{h:'#3b2a20',t:'#2c3e50',p:'#1e2a38'});
- SPR.cameo=mk(ROBOT,{m:'#ff9ec7',v:'#5a2a4a',l:'#ffffff',a:'#ff6b9a',d:'#d64d82'});
- SPR.chipG=mk(ROBOT,{m:'#ffd23f',v:'#7a5200',l:'#fff6b0',a:'#ff6b9a',d:'#e6a800'});SPR.chipP=mk(ROBOT,{m:'#ffb3d1',v:'#7a1f45',l:'#ffffff',a:'#ff6b9a',d:'#ff6b9a'});SPR.chipN=mk(ROBOT,{m:'#29366f',v:'#0b1736',l:'#ffd23f',a:'#ffd23f',d:'#3b5bdb'});
+ SPR.fisher=H({h:'#e8c25a',t:'#3b8fd6',p:'#2c3e50'});{const tp={h:'#3b2a20',t:'#2c3e50',p:'#1e2a38'},b=H(tp);SPR.teacher=mk(topRows(HUMAN,[,,,,,"...okwkskwkso..."]),tp);SPR.teacher.u=b.u;SPR.teacher.s=b.s}
+ SPR.cameo=R({m:'#ff9ec7',v:'#5a2a4a',l:'#ffffff',a:'#ff6b9a',d:'#d64d82'});
+ SPR.chipG=R({m:'#ffd23f',v:'#7a5200',l:'#fff6b0',a:'#ff6b9a',d:'#e6a800'});SPR.chipP=R({m:'#ffb3d1',v:'#7a1f45',l:'#ffffff',a:'#ff6b9a',d:'#ff6b9a'});SPR.chipN=R({m:'#29366f',v:'#0b1736',l:'#ffd23f',a:'#ffd23f',d:'#3b5bdb'});
  SPR.box=mk(RAW.box,{B:'#c08a4a',L:'#e8c27a'});SPR.arrow=mk(RAW.arrow,{R:'#e74c3c'});SPR.lock=mk(RAW.lock,{Y:'#ffd23f'});SPR.check=mk(RAW.check,{g:'#38b764'});
 }
 const URLC={};
@@ -373,6 +398,16 @@ const NPCS=[
  {id:'shop',spr:'merch',x:13,y:11},{id:'stu',spr:'stu',x:20,y:19},{id:'tower',spr:'guard',x:27,y:19},
  {id:'board',spr:'sign',x:17,y:9},{id:'fisher',spr:'fisher',x:30,y:24},{id:'teacher',spr:'teacher',x:45,y:23},{id:'cameo',spr:'cameo',x:22,y:28}];
 const QB={
+ owl:[{q:'AI 챗봇이 알려 준 정보가 그럴듯해 보일 때는?',o:['책이나 믿을 만한 자료로 사실인지 다시 확인한다','그럴듯하니까 그대로 믿는다','친구에게 바로 알려 준다']},{q:'AI가 틀린 정보를 사실처럼 말하는 것을 무엇이라 할까?',o:['환각(할루시네이션)','정답','칭찬']}],
+ bubble:[{q:'추천 영상만 계속 보면 어떻게 될까?',o:['한쪽 생각에만 갇힐 수 있다','모든 생각을 골고루 알게 된다','아무 변화가 없다']},{q:'필터버블에서 벗어나려면?',o:['다양한 사람의 의견과 자료를 찾아본다','좋아하는 것만 계속 본다','다른 의견은 무시한다']}],
+ rat:[{q:'숙제할 때 AI를 바르게 쓰는 방법은?',o:['먼저 내 생각을 정리하고 AI는 도움으로만 쓴다','AI에게 전부 맡긴다','AI 답을 외워서 낸다']},{q:'생각을 AI에게 다 맡기면 어떻게 될까?',o:['스스로 생각하는 힘이 약해진다','더 똑똑해진다','아무 일도 없다']}],
+ parrot:[{q:'가족 목소리로 "급하게 돈을 보내 줘"라는 전화가 오면?',o:['전화를 끊고 가족에게 직접 다시 확인한다','바로 돈을 보낸다','친구에게 대신 보내 달라고 한다']},{q:'AI 목소리 복제를 나쁘게 쓰면 어떤 일이 생길까?',o:['다른 사람을 속이는 사기에 쓰일 수 있다','모두가 행복해진다','노래를 잘하게 된다']}],
+ spider:[{q:'SNS에 사진을 올릴 때 조심할 점은?',o:['학교, 집 주소, 위치가 드러나지 않게 한다','위치 정보를 꼭 켜 둔다','모르는 사람에게도 위치를 알려 준다']},{q:'앱이 내 위치 정보를 달라고 하면?',o:['꼭 필요한 앱인지 생각하고 보호자와 상의한다','무조건 허용한다','친구 위치까지 알려 준다']}],
+ gacha:[{q:'게임에서 "한정 아이템! 지금 결제!" 광고가 뜨면?',o:['꼭 필요한지 생각하고 보호자와 상의한다','바로 결제한다','부모님 몰래 결제한다']},{q:'AI가 나에게 맞춤 광고를 보여 주는 이유는?',o:['내가 더 사게 만들려고','무조건 나를 도우려고','아무 이유 없이']}],
+ tattat:[{q:'AI로 만든 글 때문에 친구가 상처받았다면?',o:['내가 쓴 것이니 책임지고 사과한다','AI가 한 것이니 나는 상관없다','모른 척한다']},{q:'AI를 사용한 결과는 누구의 책임일까?',o:['AI를 사용한 사람에게도 책임이 있다','AI에게만 책임이 있다','아무에게도 책임이 없다']}],
+ gamez:[{q:'게임을 건강하게 즐기는 방법은?',o:['하루 게임 시간을 정하고 지킨다','밤새 게임을 한다','밥 먹을 때도 계속 한다']},{q:'게임을 멈추기 어렵다고 느껴지면?',o:['보호자나 선생님께 솔직하게 도움을 청한다','혼자 몰래 계속한다','숙제를 미루고 게임한다']}],
+ bully:[{q:'친구가 단톡방에서 따돌림을 당하는 것을 봤다면?',o:['모른 척하지 않고 친구 곁에 서며 어른께 알린다','나도 같이 놀린다','못 본 척 나간다']},{q:'AI로 친구를 놀리는 사진을 만들어 퍼뜨리는 것은?',o:['사이버 폭력이자 학교 폭력이다','장난이니까 괜찮다','AI가 만들었으니 괜찮다']}],
+ ghost:[{q:'AI로 만든 그림을 발표 자료에 쓸 때는?',o:['AI로 만들었다는 것과 출처를 밝힌다','내가 직접 그렸다고 한다','남의 그림을 몰래 섞는다']},{q:'인터넷에서 찾은 남의 그림을 쓰려면?',o:['만든 사람과 출처를 밝히고 허락된 방법으로 쓴다','출처를 지우고 쓴다','내 이름을 붙인다']}],
  spam:[{q:'"축하합니다! 당첨!" 같은 모르는 링크가 오면?',o:['누르지 않고 보호자나 선생님께 알린다','바로 눌러서 확인한다','친구들에게도 보내 준다']},{q:'모르는 사람이 보낸 파일이나 앱 설치 요청은?',o:['열지 않고 어른께 먼저 여쭤본다','궁금하니까 열어 본다','바로 설치한다']}],
  troll:[{q:'AI로 친구를 놀리는 글이나 그림을 만들어 올리면?',o:['친구에게 상처를 주는 사이버 폭력이다','장난이니까 괜찮다','AI가 만들었으니 내 책임이 아니다']},{q:'온라인에서 친구와 생각이 다를 때 바른 행동은?',o:['예의 바르게 내 생각을 말한다','욕을 해서 이긴다','여럿이 함께 공격한다']}],
  over:[{q:'AI 챗봇이나 게임을 바르게 사용하는 방법은?',o:['사용 시간을 정해서 알맞게 쓴다','밤늦게까지 계속 쓴다','숙제보다 먼저 실컷 한다']},{q:'AI 챗봇에게 고민을 말할 때 기억할 점은?',o:['중요한 고민은 믿을 수 있는 어른과도 꼭 이야기한다','AI의 말만 무조건 믿는다','개인정보를 모두 알려 준다']}],
@@ -382,8 +417,19 @@ const QB={
  pw:[{q:'AI 챗봇에게 알려 주면 안 되는 것은?',o:['내 비밀번호와 집 주소','좋아하는 동물','오늘 배운 과목']},{q:'모르는 앱이 내 개인정보를 달라고 하면?',o:['보호자나 선생님께 먼저 여쭤본다','바로 모두 입력한다','친구 정보까지 입력한다']}],
  bias:[{q:'AI가 한쪽으로 치우친 자료로만 배우면 어떻게 될까?',o:['어떤 사람들에게 불공정한 판단을 할 수 있다','언제나 더 공정해진다','아무 영향이 없다']},{q:'AI의 판단이 공정한지 확인하려면?',o:['사람이 다양한 자료로 결과를 점검한다','AI는 항상 옳으니 그대로 믿는다','결과를 아무에게도 보여 주지 않는다']}],
  copy:[{q:'AI가 써 준 글을 숙제로 그대로 내면?',o:['정직하지 않고 내 실력도 늘지 않는다','선생님께 칭찬받는다','실력이 쑥쑥 는다']},{q:'AI 도움을 받아 과제를 했다면?',o:['도움받은 부분을 솔직하게 밝힌다','내가 다 했다고 말한다','친구 숙제도 AI로 만들어 준다']},{q:'진짜 실력 없이 얻은 성취는 무엇과 같을까?',o:['파도 한 번에 무너지는 모래성','단단한 바위','튼튼한 다리']}]};
+const HABN={town:'🏙️ 마을',forest:'🌲 숲',beach:'🌊 바닷가',rare:'✨ 희귀'};
 const MON={
- spam:{name:'스팸 슬라임',spr:'slimeO',hp:24,atk:[3,4],xp:18,coin:10,line:'축하합니다! 당첨! 이 링크를 눌러서 선물 받아 가~',tip:'당첨 문자나 모르는 링크는 누르지 말고 어른께 알려요.'},
+ owl:{hab:'forest',name:'환각 올빼미',spr:'owl',hp:28,atk:[3,5],xp:24,coin:13,line:'부엉~ 내 말은 그럴듯하지? 사실인지 확인할 필요 없어~',tip:'AI도 그럴듯한 거짓말(환각)을 해요. 답은 꼭 다시 확인해요.'},
+ bubble:{hab:'forest',name:'필터버블 해파리',spr:'jellyM',hp:28,atk:[3,5],xp:24,coin:13,line:'둥실둥실~ 네가 좋아하는 것만 보여 줄게. 다른 생각은 필요 없어~',tip:'추천만 따라가면 한쪽 생각에 갇혀요. 다양한 의견을 찾아봐요.'},
+ rat:{hab:'forest',name:'대신해쥐',spr:'rat',hp:28,atk:[3,5],xp:24,coin:13,line:'찍찍! 생각은 내가 대신 해 줄게. 너는 그냥 따라 하기만 해~',tip:'생각을 AI에게 다 맡기지 말고, 내 생각을 먼저 해요.'},
+ parrot:{hab:'beach',name:'목소리 복제 앵무',spr:'parrot',hp:28,atk:[3,5],xp:24,coin:13,line:'엄마 목소리 흉내 내기~ "돈 좀 보내 줘!" 깍깍!',tip:'AI로 목소리도 흉내 낼 수 있어요. 수상한 전화는 다시 확인해요.'},
+ spider:{hab:'beach',name:'위치 추적 거미',spr:'spider',hp:30,atk:[3,5],xp:24,coin:13,line:'네가 올린 사진 속 위치, 다 알고 있지롱~',tip:'사진이나 앱으로 내 위치를 함부로 공유하지 않아요.'},
+ gacha:{hab:'beach',name:'뽑기 미믹',spr:'gacha',hp:30,atk:[3,5],xp:24,coin:13,line:'AI가 추천해 준 특별 아이템! 한 번만 더 뽑아 봐~',tip:'추천과 광고에 끌려 결제하지 말고, 꼭 필요한지 생각해요.'},
+ tattat:{hab:'town',name:'탓탓봇',spr:'tattat',hp:30,atk:[3,5],xp:24,coin:13,line:'삐빅! 문제가 생기면 다 AI 탓! 나는 책임 없음!',tip:'AI를 쓴 결과에도 쓴 사람의 책임이 있어요.'},
+ gamez:{hab:'town',name:'게임중독 좀비',spr:'gamez',hp:30,atk:[3,5],xp:24,coin:13,line:'한 판만 더… 한 판만 더… 밥도 숙제도 나중에…',tip:'게임 시간을 정하고, 지키지 못하면 어른께 도움을 청해요.'},
+ bully:{hab:'town',name:'따돌림 그림자',spr:'bully',hp:30,atk:[3,5],xp:24,coin:13,line:'쟤는 빼고 우리끼리 놀자~ 단톡방에서도 모르는 척하자~',tip:'따돌림을 보면 모른 척하지 말고 친구 곁에 서고 어른께 알려요.'},
+ ghost:{hab:'rare',name:'베끼루 유령',spr:'ghost',hp:26,atk:[2,4],xp:40,coin:30,line:'스르륵~ 남이 만든 그림, 출처 없이 내 것처럼 쓰면 돼~',tip:'AI로 만든 것이라도 남의 작품을 쓸 땐 출처를 밝혀요.'},
+ spam:{hab:'town',name:'스팸 슬라임',spr:'slimeO',hp:24,atk:[3,4],xp:18,coin:10,line:'축하합니다! 당첨! 이 링크를 눌러서 선물 받아 가~',tip:'당첨 문자나 모르는 링크는 누르지 말고 어른께 알려요.'},
  troll:{name:'악플 고블린',spr:'goblinV',hp:28,atk:[3,5],xp:22,coin:12,line:'AI로 친구 놀리는 글 만들어 올리자! 장난인데 뭐 어때~',tip:'AI로 만든 글이라도 상처를 주면 사이버 폭력이에요.'},
  over:{name:'과몰입 버섯',spr:'mushP',hp:28,atk:[3,5],xp:22,coin:12,line:'밤새도록 AI랑 게임만 하자~ 숙제는 내일 해도 돼~',tip:'AI와 기기는 시간을 정해서 알맞게 써요.'},
  fake:{name:'가짜뉴스 슬라임',spr:'slimeP',hp:22,atk:[2,4],xp:15,coin:8,line:'AI가 만든 엄청난 소식이야! 확인하지 말고 얼른 퍼뜨려~',tip:'놀라운 소식일수록 다른 자료로 꼭 확인해요.'},
@@ -392,11 +438,11 @@ const MON={
  pw:{name:'비번 도둑 박쥐',spr:'batS',hp:24,atk:[3,4],xp:18,coin:10,line:'챗봇에게 네 비밀번호를 알려 줘~ 내가 지켜 줄게~',tip:'비밀번호와 주소는 AI에게도 알려 주지 않아요.'},
  bias:{name:'편향 버섯',spr:'mush',hp:26,atk:[3,5],xp:20,coin:12,line:'한쪽 자료만 먹고 자랐지! 내 판단은 무조건 옳아!',tip:'치우친 자료로 배운 AI는 불공정할 수 있어요.'},
  copy:{name:'복붙 고블린',spr:'goblin',hp:26,atk:[3,5],xp:20,coin:12,line:'AI가 써 준 숙제, 그대로 복붙하면 끝! 키키키!',tip:'AI 도움은 솔직하게 밝히고 내 글로 써요.'},
- gold:{name:'황금 슬라임',spr:'slimeG',hp:30,atk:[1,3],xp:40,coin:60,line:'반짝반짝~ 나를 잡으면 코인이 와르르!',tip:'아주 드물게 나타나는 행운의 슬라임!'}};
+ gold:{hab:'rare',name:'황금 슬라임',spr:'slimeG',hp:30,atk:[1,3],xp:40,coin:60,line:'반짝반짝~ 나를 잡으면 코인이 와르르!',tip:'아주 드물게 나타나는 행운의 슬라임!'}};
 const DF=[{n:'쉬움',i:'😊',hp:1,atk:1,qh:0,coin:1,apple:10,d:'처음 해 보는 친구에게 추천! 몬스터가 약해요.'},{n:'보통',i:'😐',hp:1.35,atk:1.3,qh:3,coin:.8,apple:15,d:'몬스터가 더 튼튼하고, 퀴즈를 틀리면 HP가 3 줄어요.'},{n:'어려움',i:'🔥',hp:1.75,atk:1.6,qh:6,coin:.6,apple:20,d:'진짜 수호대만 도전! 퀴즈를 틀리면 HP가 6 줄고 코인도 적게 받아요.'}];
 const df=()=>DF[S&&S.diff!=null?S.diff:0];
 const RAR={N:['일반','#c0c8d8'],R:['희귀','#41a6f6'],L:['전설','#ffd23f']};
-const ITM={apple:{i:'🍎',n:'에너지 사과',d:'HP +15',price:10},lunch:{i:'🍱',n:'수호대 도시락',d:'HP 모두 회복',price:25},guard:{i:'🛡️',n:'방패 물약',d:'이번 전투에서 받는 피해 절반',price:20},power:{i:'⚡',n:'번개 사탕',d:'이번 전투에서 공격력 +5',price:25},orb:{i:'🔮',n:'지혜의 구슬',d:'야생 몬스터 설득 문제에서 틀린 보기 하나 지우기',price:15}};
+const ITM={apple:{i:'🍎',n:'에너지 사과',d:'HP +15',price:10},lunch:{i:'🍱',n:'수호대 도시락',d:'HP 모두 회복',price:25},guard:{i:'🛡️',n:'방패 물약',d:'이번 전투에서 받는 피해 절반',price:20},power:{i:'⚡',n:'번개 사탕',d:'이번 전투에서 공격력 +5',price:25},orb:{i:'🔮',n:'지혜의 구슬',d:'야생 몬스터 설득 문제에서 틀린 보기 하나 지우기',price:15},jelly:{i:'🍮',n:'필살 젤리',d:'필살 게이지 +50',price:25},sand:{i:'⏳',n:'슬로우 모래시계',d:'이번 전투에서 타이밍 막대가 느려져요',price:20},clover:{i:'🍀',n:'행운 클로버',d:'이번 전투에서 이기면 코인 2배',price:30},feather:{i:'🪶',n:'부활 깃털',d:'쓰러지면 자동으로 HP 절반으로 부활 (1회)',price:60}};
 const priceOf=k=>k==='apple'?df().apple:ITM[k].price;
 const WPN={stick:{i:'🪵',n:'나무 막대',atk:0,r:'N',d:'처음부터 들고 있는 막대기'},ruler:{i:'📏',n:'정의의 자',atk:3,r:'N',d:'공정하게 재는 자'},pencil:{i:'✏️',n:'진실의 연필',atk:5,r:'N',price:60,d:'내 생각을 내 글로 쓰는 연필'},lamp:{i:'🔦',n:'확인 손전등',atk:7,r:'R',d:'숨은 것을 비춰 확인하는 손전등'},water:{i:'💦',n:'정의의 물총',atk:8,r:'R',d:'불공정을 시원하게 씻어 내는 물총'},hammer:{i:'🔨',n:'공정의 망치',atk:10,r:'R',price:150,d:'불공정을 깨뜨리는 망치'},laser:{i:'🔴',n:'레이저 포인터',atk:11,r:'R',d:'핵심을 콕 짚어 주는 레이저'},bow:{i:'🏹',n:'팩트체크 활',atk:12,r:'R',price:220,d:'거짓을 꿰뚫는 활'},sword:{i:'🗡️',n:'규칙의 검',atk:14,r:'L',d:'노룰 박사를 물리친 수호대의 검 (보스 보상)'},starsword:{i:'🌟',n:'비밀 정원 별빛검',atk:15,r:'L',d:'비밀 정원에서만 찾을 수 있는 별빛 검'},keyboard:{i:'⚡',n:'번개 키보드',atk:16,r:'L',d:'바른 글만 빛의 속도로 쓰는 키보드 (탑 보상)'},rainbow:{i:'🌈',n:'무지개 날개검',atk:19,r:'L',d:'AI를 날개로 쓰는 수호대의 전설 검 (탑 보상)'}};
 const jo=(w,a,b)=>{const c=String(w).charCodeAt(String(w).length-1)-0xAC00;return c>=0&&c<11172?(c%28?a:b):a+'('+b+')'};
@@ -408,11 +454,11 @@ const PLEDGE=['먼저 생각하기: AI에게 묻기 전에 내 생각부터 적�
 
 /* =========== 상태 =========== */
 let S,busy=false;
-const fresh=()=>({cleared:{},cards:[],badges:[],xp:0,hp:30,coins:0,items:{apple:2,lunch:0,guard:0,power:0,orb:1},got:{},notes:0,gran:0,party:[],pos:{x:16,y:12},sound:true,intro:false,endData:null,dex:{},best:{tower:0,fire:[0,0,0]},free:false,weapons:['stick'],weapon:'stick',books:0,diff:1,fast:false,look:false,looked:{},eggs:{},pieces:0,rumor:0,chipSkin:0,fishOpen:false,fishN:0,titles:[],letter:false});
+const fresh=()=>({cleared:{},cards:[],badges:[],xp:0,hp:30,coins:0,items:{apple:2,lunch:0,guard:0,power:0,orb:1,jelly:0,sand:0,clover:0,feather:0},got:{},notes:0,gran:0,party:[],pos:{x:16,y:12},sound:true,intro:false,endData:null,dex:{},best:{tower:0,fire:[0,0,0]},free:false,weapons:['stick'],weapon:'stick',books:0,diff:1,fast:false,look:false,looked:{},eggs:{},pieces:0,rumor:0,chipSkin:0,fishOpen:false,fishN:0,titles:[],letter:false});
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
-const load=()=>{try{const v=JSON.parse(localStorage.getItem(KEY));if(!v)return null;const o=Object.assign(fresh(),v);o.looked=v.looked||{};o.best=Object.assign({tower:0,fire:[0,0,0],fstage:0},v.best);if(v.diff==null)o.diff=0;o.items=Object.assign({apple:0,lunch:0,guard:0,power:0,orb:0},v.items);return o}catch(e){return null}};
+const load=()=>{try{const v=JSON.parse(localStorage.getItem(KEY));if(!v)return null;const o=Object.assign(fresh(),v);o.looked=v.looked||{};o.best=Object.assign({tower:0,fire:[0,0,0],fstage:0},v.best);if(v.diff==null)o.diff=0;o.items=Object.assign({apple:0,lunch:0,guard:0,power:0,orb:0,jelly:0,sand:0,clover:0,feather:0},v.items);return o}catch(e){return null}};
 const lv=()=>1+Math.floor(S.xp/100);
-const maxHP=()=>30+6*(lv()-1)+(S.gran===2?10:0);
+const maxHP=()=>30+6*(lv()-1)+(S.gran===2?10:0)+(S.hpBonus||0);
 const atkStat=()=>2+lv()+(WPN[S.weapon]?.atk||0);
 const nextZone=()=>ORDER.find(z=>!S.cleared[z]);
 const locked=z=>ORDER.indexOf(z)>ORDER.indexOf(nextZone());
@@ -427,7 +473,7 @@ function snd(t){if(!S||!S.sound)return;try{AC=AC||new(window.AudioContext||windo
 function show(id){$$('.screen').forEach(s=>s.classList.toggle('on',s.id===id));hideDlg();if(id==='world'){resize();delete document.body.dataset.zone}}
 let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2000)}
 function pop(text,big,el){const e=document.createElement('div');e.className='pop'+(big?' big':'');e.textContent=text;let x=innerWidth/2,y=innerHeight*.3;if(el){const r=el.getBoundingClientRect();x=r.left+r.width/2;y=r.top+r.height*.3}e.style.left=(x-40)+'px';e.style.top=y+'px';document.body.appendChild(e);setTimeout(()=>e.remove(),950)}
-function hud(){$('#hHp i').style.width=clamp(S.hp/maxHP()*100,0,100)+'%';$('#hHpT').textContent=S.hp+'/'+maxHP();$('#hLv').textContent='Lv.'+lv();$('#hXp i').style.width=(S.xp%100)+'%';$('#hCoin').textContent='🪙 '+S.coins;$('#hSnd').textContent=S.sound?'🔊':'🔇';$('#hLook').classList.toggle('on',!!S.look);$('#hLook').textContent=S.look?'👆 살펴보기 ON':'👆 살펴보기';
+function hud(){$('#hHp i').style.width=clamp(S.hp/maxHP()*100,0,100)+'%';$('#hHpT').textContent=S.hp+'/'+maxHP();$('#hLv').textContent='Lv.'+lv();$('#hXp i').style.width=(S.xp%100)+'%';$('#hCoin').textContent='🪙 '+S.coins;$('#hSnd').textContent=S.sound?'🔊':'🔇';
  const n=nextZone();$('#hMenu').style.display=S.cleared.boss?'':'none';$('#hGoal').textContent=S.free?`📖 도감 ${Object.keys(MON).filter(k=>S.dex[k]).length}/${Object.keys(MON).length} · 풀숲을 탐험해요!`:n?'🎯 '+BZ[n].name:'🎯 모든 규칙을 되찾았다!'}
 function addXP(n){const b=lv();S.xp+=n;pop('+'+n+' XP');const up=lv()-b;if(up>0){S.hp=maxHP();setTimeout(()=>{snd('lv');toast(`⭐ 레벨 업! Lv.${lv()} · 최대 HP·공격력 UP!`)},450)}hud();save();return up}
 function heal(n){S.hp=Math.min(maxHP(),S.hp+n);snd('heal');hud();save()}
@@ -488,7 +534,7 @@ function buildMap(){const m=[...Array(MH)].map(()=>Array(MW).fill('.'));
  // 바닷가 (남쪽)
  rect(1,21,46,21,'T');rect(1,21,14,28,'~');rect(15,22,46,25,'s');rect(15,26,46,28,'~');
  rect(16,19,16,22,'=');set(37,21,'=');rect(22,26,22,28,'D');
- rect(42,22,42,24,'r');set(43,22,'r');
+ rect(42,22,42,25,'r');rect(43,22,46,25,'c');set(42,24,'R');
  // 항구 소품, 순찰차
  [[3,12],[4,12],[3,13]].forEach(([x,y])=>set(x,y,'K'));set(4,14,'C');set(26,6,'B');
  rect(0,0,MW-1,0,'T');rect(0,MH-1,MW-1,MH-1,'T');rect(0,0,0,MH-1,'T');rect(MW-1,0,MW-1,MH-1,'T');
@@ -502,7 +548,8 @@ function bake(){const c=document.createElement('canvas');c.width=MW*16;c.height=
  const grass=(X,Y,alt)=>{px(alt?'#8fd16a':'#86c85f',X,Y,16,16);[[2,3],[9,5],[13,11],[5,12],[11,1]].forEach(([a,b])=>px('#6fb54f',X+(alt?15-a:a),Y+b,1,2))};
  for(let y=0;y<MH;y++)for(let X,Y,ch,x0=0;x0<MW;x0++){X=x0*16;Y=y*16;ch=MAP[y][x0];
   if('.:BTHKC'.includes(ch))grass(X,Y,ch===':');
-  else if(ch==='s'||ch==='r'){px('#f2d98d',X,Y,16,16);[[3,4],[11,8],[6,13],[13,2]].forEach(([a,b])=>px('#dcc070',X+a,Y+b,2,1));if(ch==='r'){px('#1a1c2c',X+1,Y+3,14,12);px('#9aa3ad',X+2,Y+4,12,10);px('#c5ccd4',X+3,Y+5,5,3);px('#6b737c',X+2,Y+12,12,2)}}
+  else if(ch==='c'){px('#2a2433',X,Y,16,16);[[3,4],[11,9],[6,13]].forEach(([a,b])=>px('#3b3348',X+a,Y+b,3,2))}
+  else if(ch==='s'||ch==='r'||ch==='R'){px('#f2d98d',X,Y,16,16);[[3,4],[11,8],[6,13],[13,2]].forEach(([a,b])=>px('#dcc070',X+a,Y+b,2,1));if(ch==='r'||ch==='R'){px('#1a1c2c',X+1,Y+3,14,12);px('#9aa3ad',X+2,Y+4,12,10);px('#c5ccd4',X+3,Y+5,5,3);px('#6b737c',X+2,Y+12,12,2)}}
   else if(ch==='p'){px('#4aa3e0',X,Y,16,16);px('#8fd0ff',X+3+(x0%2)*5,Y+5,4,1);if((x0+y)%3===1){px('#2f8a3e',X+8,Y+9,6,4);px('#ff9ec7',X+10,Y+10,2,2)}}
   else if(ch===','){grass(X,Y,0);[[4,5,'#ff6b9a'],[10,9,'#ffd23f'],[6,12,'#fff']].forEach(([a,b,f])=>{px(f,X+a-1,Y+b,3,1);px(f,X+a,Y+b-1,1,3);px('#ffd23f',X+a,Y+b)})}
   else if(ch==='='||ch==='M'){px('#e8c98a',X,Y,16,16);[[3,4],[11,2],[7,11],[13,13],[2,13]].forEach(([a,b])=>px('#d4b06a',X+a,Y+b,2,1));if(ch==='M'){px('#1a1c2c',X+2,Y+3,12,10);px('#d64545',X+3,Y+4,10,8);px('#f08080',X+4,Y+5,8,1)}}
@@ -558,28 +605,30 @@ function passable(x,y){if(x<0||y<0||x>=MW||y>=MH)return false;if('T~BKCrp'.inclu
 function bfs(goal){const k=(x,y)=>y*MW+x,st=k(P.x,P.y);if(goal(P.x,P.y))return [];const prev=new Map([[st,-1]]),q=[st];
  while(q.length){const c=q.shift(),x=c%MW,y=(c/MW)|0;if(c!==st&&goal(x,y)){const p=[];let u=c;while(u!==st){p.unshift([u%MW,(u/MW)|0]);u=prev.get(u)}return p}
   for(const [dx,dy] of D4){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=MW||ny>=MH)continue;const nk=k(nx,ny);if(prev.has(nk))continue;
-   const mat=MAP[ny][nx]==='M';if(mat?!goal(nx,ny):(!passable(nx,ny)||(MAP[ny][nx]==='H'&&!S.eggs.garden)))continue;prev.set(nk,c);q.push(nk)}}return null}
-function goTile(tx,ty){if(busy)return;if(MAP[ty]?.[tx]==='p'){pondTap(tx,ty);return}const n=npcAt(tx,ty);if(S.look&&!n&&MAP[ty]?.[tx]!=='M'){lookAt(tx,ty);return}
+   const mat=MAP[ny][nx]==='M';if(mat?!goal(nx,ny):(!passable(nx,ny)||(MAP[ny][nx]==='H'&&!S.eggs.garden)||(MAP[ny][nx]==='R'&&!S.eggs.teacher)))continue;prev.set(nk,c);q.push(nk)}}return null}
+function goTile(tx,ty){if(busy)return;if(MAP[ty]?.[tx]==='p'){pondTap(tx,ty);return}const n=npcAt(tx,ty);
  if(n){const p=bfs((x,y)=>Math.abs(x-tx)+Math.abs(y-ty)===1&&MAP[y][x]!=='M');if(p){P.path=p;P.after=n}return}
  if(!passable(tx,ty)&&MAP[ty][tx]!=='M')return;const p=bfs((x,y)=>x===tx&&y===ty);if(p){P.path=p;P.after=null}}
-function startMove(nx,ny){const old={x:P.x,y:P.y};if(nx!==P.x)P.dir=nx<P.x?-1:1;P.tx=nx;P.ty=ny;P.moving=true;
- if(S.party.includes('zero')){Z.tx=C.x;Z.ty=C.y;if(Z.tx!==Z.x||Z.ty!==Z.y){Z.dir=Z.tx<Z.x?-1:Z.tx>Z.x?1:Z.dir;Z.moving=true}}
- C.tx=old.x;C.ty=old.y;C.dir=C.tx<C.x?-1:C.tx>C.x?1:C.dir;C.moving=true}
+const faceOf=(dx,dy)=>dx>0?'r':dx<0?'l':dy<0?'u':'d',FV={u:[0,-1],d:[0,1],l:[-1,0],r:[1,0]};
+function startMove(nx,ny){const old={x:P.x,y:P.y};P.face=faceOf(nx-P.x,ny-P.y);if(nx!==P.x)P.dir=nx<P.x?-1:1;P.tx=nx;P.ty=ny;P.moving=true;
+ if(S.party.includes('zero')){Z.tx=C.x;Z.ty=C.y;if(Z.tx!==Z.x||Z.ty!==Z.y){Z.face=faceOf(Z.tx-Z.x,Z.ty-Z.y);Z.dir=Z.tx<Z.x?-1:Z.tx>Z.x?1:Z.dir;Z.moving=true}}
+ C.tx=old.x;C.ty=old.y;if(C.tx!==C.x||C.ty!==C.y)C.face=faceOf(C.tx-C.x,C.ty-C.y);C.dir=C.tx<C.x?-1:C.tx>C.x?1:C.dir;C.moving=true}
 function moveEnt(e,dt,cb){if(!e.moving)return;const sp=6.5*dt,dx=e.tx-e.fx,dy=e.ty-e.fy,d=Math.hypot(dx,dy);
  if(d<=sp){e.fx=e.tx;e.fy=e.ty;e.x=e.tx;e.y=e.ty;e.moving=false;cb&&cb()}else{e.fx+=dx/d*sp;e.fy+=dy/d*sp}}
 function update(dt){moveEnt(P,dt,onStep);moveEnt(C,dt);moveEnt(Z,dt);if(busy||P.moving)return;
  if(P.path.length){const [nx,ny]=P.path.shift();startMove(nx,ny);return}
  if(P.after){const n=P.after;P.after=null;if(n.x!==P.x)P.dir=n.x<P.x?-1:1;talkNPC(n);return}
- if(held){const nx=P.x+held[0],ny=P.y+held[1];if(held[0])P.dir=held[0];const n=npcAt(nx,ny);if(n){held=null;talkNPC(n);return}if(passable(nx,ny)||MAP[ny]?.[nx]==='M')startMove(nx,ny)}}
+ if(held){const nx=P.x+held[0],ny=P.y+held[1];if(held[0])P.dir=held[0];P.face=faceOf(held[0],held[1]);const n=npcAt(nx,ny);if(n){held=null;talkNPC(n);return}if(passable(nx,ny)||MAP[ny]?.[nx]==='M')startMove(nx,ny)}}
 let lastPos=null;
 function onStep(){const x=P.x,y=P.y;const it=ITEMS.find(i=>i.x===x&&i.y===y&&!S.got[i.id]);if(it)pickItem(it);
  if(x>=42&&x<=46&&y>=1&&y<=6)egg('garden');
  if(MAP[y][x]==='M'){const b=BLD.find(b=>b.door===x&&b.y+b.h===y);P.path=[];held=null;arrive(b.z)}else{lastPos={x,y};S.pos={x,y};save();maybeEncounter()}}
 let stepCnt=0;
-function maybeEncounter(){if(!S.intro||busy)return;stepCnt++;const c=MAP[P.y][P.x],tall=c==='"';if(!(tall||'.:,'.includes(c))||stepCnt<5)return;
+function maybeEncounter(){if(!S.intro||busy)return;stepCnt++;const c=MAP[P.y][P.x],tall=c==='"';if(!(tall||'.:,s'.includes(c))||stepCnt<5)return;
  if(Math.random()<(tall?.17:.035)*(S.free?1.6:1)){stepCnt=0;encounter()}}
-function pickMon(){if(Math.random()<.06)return 'gold';const k=Object.keys(MON).filter(k=>k!=='gold');return k[rand(0,k.length-1)]}
-function makeWild(k,fl=0){const m=MON[k],f=1+fl*.18;return {key:k,wild:true,name:m.name+(fl?` (${fl}층)`:''),spr:m.spr,bg:fl?'tower':'grass',hp:Math.round(m.hp*f),weakDmg:Math.round(16*f),atk:[m.atk[0]+Math.floor(fl/3),m.atk[1]+Math.floor(fl/2)],xp:m.xp,coin:m.coin,
+function areaOf(x,y){return x>=32&&y<=20?'forest':y>=22?'beach':'town'}
+function pickMon(){if(Math.random()<.05)return 'gold';if(Math.random()<.04)return 'ghost';const a=areaOf(P.x,P.y);let pool=Object.keys(MON).filter(k=>(MON[k].hab||'town')===a);if(a!=='town'&&Math.random()<.3)pool=Object.keys(MON).filter(k=>(MON[k].hab||'town')==='town');return pool[rand(0,pool.length-1)]}
+function makeWild(k,fl=0){const m=MON[k],f=1+fl*.18;return {key:k,wild:true,name:m.name+(fl?` (${fl}층)`:''),spr:m.spr,bg:fl?'tower':({forest:'forest',beach:'beach'}[m.hab]||'grass'),hp:Math.round(m.hp*f),weakDmg:Math.round(16*f),atk:[m.atk[0]+Math.floor(fl/3),m.atk[1]+Math.floor(fl/2)],xp:m.xp,coin:m.coin,
  intro:fl?`🏯 ${fl}층! ${m.name}${josa(m.name)} 앞을 막아섰다!`:`앗! 야생의 ${m.name}${josa(m.name)} 나타났다!`,win:`${m.name}${josa(m.name)} 반성하며 사라졌다.`,schemes:[{line:m.line,key:'💬 설득하기로 바른 답을 말해 보호막을 깨자!'}],qs:shuffle(k==='gold'?Object.values(QB).flat():QB[k])}}
 async function checkDex(){if(!Object.keys(MON).every(k=>S.dex[k]))return;badge('dex');if(S.letter)return;S.letter=true;if(!S.titles.includes('AI 윤리 박사'))S.titles.push('AI 윤리 박사');save();await wait(400);await showLetter(true)}
 function showLetter(first){snd('lv');document.body.classList.add('enc');setTimeout(()=>document.body.classList.remove('enc'),700);
@@ -598,8 +647,8 @@ function pickItem(it){S.got[it.id]=1;
 function resize(){const cv=$('#cv'),w=cv.parentElement;cv.width=w.clientWidth;cv.height=w.clientHeight;SCL=Math.max(2,Math.floor(Math.min(cv.width/(16*14),cv.height/(16*8.5))))}
 addEventListener('resize',()=>{if($('#world').classList.contains('on'))resize()});
 function drawEnt(x,e,spr){const X=Math.round(e.fx*16),Y=Math.round(e.fy*16),bob=e.moving?(Math.floor(anim*10)%2):(Math.floor(anim*2+e.fx*1.7)%2);
- x.fillStyle='rgba(0,0,0,.28)';x.fillRect(X+4,Y+14,8,2);const s=SPR[spr];
- if(e.dir<0){x.save();x.translate(X+16,Y-bob);x.scale(-1,1);x.drawImage(s,0,0);x.restore()}else x.drawImage(s,X,Y-bob)}
+ x.fillStyle='rgba(0,0,0,.28)';x.fillRect(X+4,Y+14,8,2);const b=SPR[spr],f=e.face||'d',s=f==='u'?(b.u||b):(f==='l'||f==='r')?(b.s||b):b,flip=b.s?f==='l':e.dir<0;
+ if(flip){x.save();x.translate(X+16,Y-bob);x.scale(-1,1);x.drawImage(s,0,0);x.restore()}else x.drawImage(s,X,Y-bob)}
 function render(){const cv=$('#cv'),x=cv.getContext('2d'),cw=cv.width,ch=cv.height;x.imageSmoothingEnabled=false;
  x.setTransform(1,0,0,1,0,0);x.fillStyle='#1a1c2c';x.fillRect(0,0,cw,ch);
  const vw=cw/SCL,vh=ch/SCL;let cx=P.fx*16+8-vw/2,cy=P.fy*16+8-vh/2;
@@ -607,14 +656,15 @@ function render(){const cv=$('#cv'),x=cv.getContext('2d'),cw=cv.width,ch=cv.heig
  x.setTransform(SCL,0,0,SCL,-Math.round(cx*SCL),-Math.round(cy*SCL));x.drawImage(MAPC,0,0);
  if(Math.floor(anim*2)%2){x.fillStyle='#a8dcff';for(let y=0;y<MH;y++)for(let i=0;i<MW;i++){const c=MAP[y][i];if((c==='~'||c==='p')&&(i+y)%3===0)x.fillRect(i*16+6,y*16+8,3,1)}}
  renderFx(x);
- if(S.look){x.strokeStyle='rgba(255,210,63,.85)';x.lineWidth=1.5;x.setLineDash([3,2]);x.beginPath();x.arc(P.fx*16+8,P.fy*16+8,3.5*16,0,7);x.stroke();x.setLineDash([])}
+ if(!P.moving&&!busy){const [fx2,fy2]=FV[P.face||'d'],X2=(P.x+fx2)*16,Y2=(P.y+fy2)*16;x.fillStyle='rgba(255,210,63,'+(.55+.35*(Math.floor(anim*3)%2))+')';[[0,0,4,1],[0,0,1,4],[12,0,4,1],[15,0,1,4],[0,15,4,1],[0,12,1,4],[12,15,4,1],[15,12,1,4]].forEach(([a,b2,w,h])=>x.fillRect(X2+a,Y2+b2,w,h))}
  for(let i=FX.length-1;i>=0;i--){const f=FX[i],a=anim-f.t0;if(a>f.life){FX.splice(i,1);continue}if(f.kind==='p'){x.fillStyle=f.col;x.fillRect(f.x+f.vx*a,f.y+f.vy*a+60*a*a,2,2)}}
  ITEMS.forEach(it=>{if(S.got[it.id])return;const bob=Math.floor(anim*3+it.x)%2;x.drawImage(SPR[it.t],it.x*16,it.y*16-bob)});
  const nz=nextZone();BLD.forEach(b=>{const mx=b.door*16,my=(b.y+b.h)*16;
   if(S.cleared[b.z])x.drawImage(SPR.check,mx+4,my+4);else if(locked(b.z))x.drawImage(SPR.lock,mx+4,my+4);
   if(b.z===nz)x.drawImage(SPR.arrow,mx+4,my-11+(Math.floor(anim*5)%2)*2)});
- const ents=NPCS.map(n=>({e:{fx:n.x,fy:n.y,dir:n.dir||1},s:n.spr}));ents.push({e:C,s:CH.chip[1]},{e:P,s:'hero'});if(S.party.includes('zero'))ents.push({e:Z,s:'zero'});
+ const ents=NPCS.map(n=>({e:{fx:n.x,fy:n.y,dir:n.dir||1,face:n.face},s:n.spr}));ents.push({e:C,s:CH.chip[1]},{e:P,s:'hero'});if(S.party.includes('zero'))ents.push({e:Z,s:'zero'});
  ents.sort((a,b)=>a.e.fy-b.e.fy).forEach(o=>drawEnt(x,o.e,o.s));
+ {const inCave=P.fx>=42.5&&P.fy>=21.5&&P.fy<=25.5;x.fillStyle=inCave?'rgba(10,8,20,.35)':'rgba(10,8,20,.985)';x.fillRect(43*16,22*16,4*16,4*16);if(!inCave){x.fillStyle='#ffd23f';if(Math.floor(anim*1.5)%3===0)x.fillRect(45*16+6,23*16+6,2,2)}}
  NPCS.forEach(n=>{if(npcAlert(n)){const X=n.x*16+6,Y=n.y*16-8-(Math.floor(anim*4)%2);x.fillStyle='#1a1c2c';x.fillRect(X-1,Y-1,6,9);x.fillStyle='#ffd23f';x.fillRect(X,Y,4,5);x.fillRect(X,Y+6,4,1)}});
  x.setTransform(1,0,0,1,0,0);const fs=Math.max(13,Math.round(SCL*3.2));x.font=`${fs}px Galmuri11, monospace`;x.textAlign='center';x.textBaseline='middle';
  for(const f of FX){if(f.kind!=='t')continue;const a=anim-f.t0,sx2=(f.x-cx)*SCL,sy2=(f.y-cy)*SCL-a*50;x.globalAlpha=Math.max(0,1-a/f.life);x.lineWidth=4;x.strokeStyle='#1a1c2c';x.strokeText(f.t,sx2,sy2);x.fillStyle='#ffffff';x.fillText(f.t,sx2,sy2);x.globalAlpha=1}
@@ -625,13 +675,14 @@ let lastT=0;function loop(t){const dt=Math.min(.05,(t-lastT)/1000||0);lastT=t;an
 $('#cv').addEventListener('pointerdown',e=>{const r=e.currentTarget.getBoundingClientRect();const wx=(e.clientX-r.left)/SCL+CAM.x,wy=(e.clientY-r.top)/SCL+CAM.y;goTile(Math.floor(wx/16),Math.floor(wy/16))});
 $$('#dpad button[data-d]').forEach(b=>{const d=b.dataset.d.split(',').map(Number);b.addEventListener('pointerdown',e=>{e.preventDefault();P.path=[];P.after=null;konPush(d);held=d});['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,()=>{if(held===d)held=null}))});
 addEventListener('keydown',e=>{const d={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]}[e.key]||{KeyW:[0,-1],KeyS:[0,1],KeyA:[-1,0],KeyD:[1,0]}[e.code];if(d&&$('#world').classList.contains('on')){e.preventDefault();P.path=[];if(!e.repeat&&e.key.startsWith('Arrow'))konPush(d);held=d}});
+addEventListener('keydown',e=>{if(e.code==='KeyF'&&!e.repeat)interact()});
 addEventListener('keyup',e=>{if(e.key.startsWith('Arrow')||['KeyW','KeyA','KeyS','KeyD'].includes(e.code))held=null});
 
 /* =========== 이스터에그 =========== */
 const EGGS={teacher:'👨‍🏫 숨은 선생님',garden:'🌳 비밀 정원',konami:'🎮 비밀 주문',fish:'🎣 연못 낚시',pieces:'🧩 규칙 칩 조각',cameo:'🤖 이웃 마을 손님'};
 function egg(k){if(S.eggs[k])return;S.eggs[k]=1;save();const n=Object.keys(S.eggs).length;snd('win');setTimeout(()=>toast(`🥚 이스터에그 발견! ${EGGS[k]} (${n}/6)`),250);
  if(n===6)setTimeout(()=>{badge('egg');modal('<h2>🥚 이스터에그 헌터!</h2><div class="fdesc">숨겨진 비밀 6개를 모두 찾았어요!<br>로봇시티 구석구석을 아는 진짜 수호대원이에요. 🏅</div>')},2600)}
-const RUMORS=['🗒️ 동쪽 숲 길 끝에서 나무에 부딪혔더니 몸이 쑥 들어갔다는 소문이 있어요. (화면을 누르지 말고 방향키로!)','🗒️ 숲속 연못은 똑똑, 열 번 두드려야 물고기가 깨어난대요.','🗒️ 남쪽 바닷가 동쪽 끝, 바위 뒤에 누군가 숨어서 문제를 낸대요.','🗒️ 규칙 칩 조각 5개가 흩어졌대요. 탑 뒤, 숲속, 비밀 정원, 바닷가 끝, 그리고 할머니 집 근처…','🗒️ 옛날 게임의 비밀 주문 ↑ ↑ ↓ ↓ ← → ← → 를 입력하면 칩이 반응한대요.','🗒️ 바닷가 부두 끝에 옆 동네 「인권 탐험대」에서 손님이 놀러 왔대요!'];
+const RUMORS=['🗒️ 동쪽 숲 길 끝에서 나무에 부딪혔더니 몸이 쑥 들어갔다는 소문이 있어요. (화면을 누르지 말고 방향키로!)','🗒️ 숲속 연못은 똑똑, 열 번 두드려야 물고기가 깨어난대요.','🗒️ 바닷가 동쪽 끝 바위 중 하나는 진짜 바위가 아니래요. 그 너머 깜깜한 동굴에서 누군가 기다린대요… (F로 두드려 보고, 방향키로 밀어 봐요)','🗒️ 규칙 칩 조각 5개가 흩어졌대요. 탑 뒤, 숲속, 비밀 정원, 바닷가 끝, 그리고 할머니 집 근처…','🗒️ 옛날 게임의 비밀 주문 ↑ ↑ ↓ ↓ ← → ← → 를 입력하면 칩이 반응한대요.','🗒️ 바닷가 부두 끝에 옆 동네 「인권 탐험대」에서 손님이 놀러 왔대요!'];
 const SKINS=['chip','chipG','chipP','chipN'];
 function applySkin(){CH.chip[1]=SKINS[(S&&S.chipSkin)||0]}
 const KON='UUDDLRLR';let konBuf='';
@@ -645,7 +696,7 @@ function pondTap(tx,ty){if(Math.abs(P.x-tx)+Math.abs(P.y-ty)>4){toast('💧 연�
 function fishGame(){show('mini');egg('fish');return new Promise(res=>{let cast=0,caught=[],pos=0,dir=1,raf,zone,running=false;
  const CAT=[['🐟','붕어',3,45],['🐠','열대어',6,25],['🦀','꽃게',8,12],['👢','낡은 장화',0,10],['⚙️','로봇 부품',10,6],['✨','황금 잉어',30,2]];
  const draw=()=>{zone=rand(5,72);$('#mini').innerHTML=`<div class="mg box"><div class="mgt">🎣 연못 낚시 (${cast+1}/5)</div><div class="fdesc">빨간 찌가 초록 칸에 왔을 때 "낚아채기!"를 눌러요. 노란 가운데일수록 귀한 물고기!</div><div class="fbar"><i class="fz" style="left:${zone}%"></i><i class="fc" style="left:${zone+8}%"></i><i class="fm" id="fm"></i></div><div class="fb" id="fFb">&nbsp;</div><div class="row"><button class="pbtn b" id="fGo">🎣 낚아채기!</button></div><div class="fdesc" style="font-size:26px">${caught.map(c=>c[0]).join(' ')}</div></div>`;
-  pos=0;dir=1;running=true;const sp=1.1+cast*.25;const step=()=>{if(!running)return;pos+=dir*sp;if(pos>=100){pos=100;dir=-1}if(pos<=0){pos=0;dir=1}const m=$('#fm');if(m)m.style.left=pos+'%';raf=requestAnimationFrame(step)};step();
+  pos=0;dir=1;running=true;const sp=.75+cast*.15;const step=()=>{if(!running)return;pos+=dir*sp;if(pos>=100){pos=100;dir=-1}if(pos<=0){pos=0;dir=1}const m=$('#fm');if(m)m.style.left=pos+'%';raf=requestAnimationFrame(step)};step();
   $('#fGo').onclick=e=>{if(!running)return;running=false;cancelAnimationFrame(raf);e.currentTarget.disabled=true;
    const inZ=pos>=zone&&pos<=zone+20,center=pos>=zone+7&&pos<=zone+13;
    if(!inZ){snd('bad');$('#fFb').textContent='💨 놓쳤다! 물고기가 도망갔어요.'}
@@ -656,7 +707,7 @@ function fishGame(){show('mini');egg('fish');return new Promise(res=>{let cast=0
   $('#fDone').onclick=e=>{e.currentTarget.disabled=true;e.currentTarget.onclick=null;snd('tap');if(sum)coin(sum);res()}};
  draw()})}
 async function teacherTalk(){if(S.eggs.teacher){await talk([['teacher','또 왔구나! 오늘 배운 규칙, 친구들에게도 꼭 알려 주렴.']]);return}
- await talk([['teacher','어? 여기까지 찾아오다니, 대단한 수호대원이구나!'],['teacher','깜짝 퀴즈 3문제! 다 풀면 선물을 줄게.']]);
+ await talk([['teacher','어? 이 비밀 동굴까지 찾아오다니, 대단한 수호대원이구나!'],['teacher','깜짝 퀴즈 3문제! 다 풀면 선물을 줄게.']]);
  await ask('teacher','Q1. 인공지능 로봇에게 규칙이 필요한 가장 큰 까닭은?',[{t:'사람들이 안전하게 생활할 수 있도록',ok:1,fb:'정답! 역시 수호대원!'},{t:'로봇이 더 빨리 움직이도록',fb:'다시 생각해 보자!'},{t:'로봇을 더 비싸게 팔려고',fb:'음… 그건 아니야!'}]);
  await ask('teacher','Q2. 순찰 로봇이 특정 동네 사람들만 감시하면 무엇이 문제일까?',[{t:'사람을 차별하고 통제하는 데 쓰일 수 있다',ok:1,fb:'정답! 공정함이 중요해.'},{t:'아무 문제 없다',fb:'감시당하는 사람의 마음은 어떨까?'},{t:'로봇이 피곤해진다',fb:'로봇보다 사람을 생각해 봐!'}]);
  await ask('teacher','Q3. AI를 "날개"로 쓴다는 건 무슨 뜻일까?',[{t:'내 생각과 노력에 AI의 도움을 더해 더 멀리 가는 것',ok:1,fb:'완벽해!'},{t:'AI가 다 해 주니 나는 쉬는 것',fb:'그건 마법 지팡이처럼 쓰는 거야!'},{t:'AI를 몰래 쓰는 것',fb:'제로를 떠올려 봐!'}]);
@@ -672,7 +723,7 @@ const FX=[];
 function fxAdd(x,y,t,kind,col){if(kind==='burst'){for(let i=0;i<10;i++){const a=i/10*Math.PI*2;FX.push({x,y,vx:Math.cos(a)*34,vy:Math.sin(a)*34-24,t0:anim,life:.6,col,kind:'p'})}}else FX.push({x,y,t,t0:anim,life:1.1,kind:'t'})}
 const KNOCK={stage:()=>'🎭 (안에서) 「사느냐, 죽느냐…」 연극 연습 소리가 들려요.',patrol:()=>'🚨 (안에서) 「삐뽀! 오늘도 로봇시티는 안전합니다!」',harbor:()=>'⚓ (안에서) 「영차영차! 화물 점검 중이에요!」',exam:()=>'📝 (안에서) 「쉿! 시험공부 중이에요. 내 힘으로!」',
  boss:()=>S.cleared.boss?'🏰 (안에서) 「…규칙은 소중해… 반성 중이다…」':'🏰 (안에서) 「흐흐흐…」 으스스한 웃음소리가 들려요!'};
-function lookAt(tx,ty){const c=MAP[ty]?.[tx];if(c==null)return;if(Math.abs(P.x-tx)+Math.abs(P.y-ty)>3){toast('👆 조금 더 가까이 가서 살펴봐요');return}
+function lookAt(tx,ty){const c=MAP[ty]?.[tx];if(c==null)return;
  const k=tx+','+ty,first=!S.looked[k],wx=tx*16+8,wy=ty*16+4,F=(t,kind,col)=>fxAdd(wx,wy,t,kind,col),once=()=>{S.looked[k]=1;save()};
  if(c==='T'||c==='H'){F('바스락');F('','burst','#3fa34d');snd('tap');if(first){once();if(Math.random()<.15){S.items.apple++;F('🍎');toast('🍎 나무를 흔들었더니 사과가 떨어졌다!');snd('coin');hud()}}return}
  if(c===','){F('🦋');F('','burst','#ffd23f');snd('ok');return}
@@ -680,6 +731,7 @@ function lookAt(tx,ty){const c=MAP[ty]?.[tx];if(c==null)return;if(Math.abs(P.x-t
  if(c==='.'||c===':'){F(Math.random()<.3?'🐛':'폭신');snd('tap');return}
  if(c==='~'){F('첨벙');F('','burst','#8fd0ff');snd('tap');return}
  if(c==='s'){F('','burst','#e0c070');snd('tap');if(first){once();const r=Math.random();if(r<.3){F('🐚');coin(2);toast('🐚 모래를 팠더니 조개껍데기가 나왔다!');return}if(r<.45){F('🪙');coin(rand(3,5));toast('🪙 모래 속에 코인이 묻혀 있었다!');return}}F('슥슥');return}
+ if(c==='R'){snd('tap');F('텅…?');toast('🪨 어? 이 바위는 두드리니까 속이 텅 빈 소리가 나요… 밀어 볼까?');return}
  if(c==='r'){snd('hit');if(first){once();if(Math.random()<.25){F('🪙');coin(rand(3,6));toast('🪨 바위 밑에서 코인을 찾았다!');return}}F('꿈쩍!');return}
  if(c==='K'){F('덜컹');F('','burst','#c0c8d8');snd('hit');return}
  if(c==='C'){F('끼익');snd('hit');return}
@@ -687,11 +739,13 @@ function lookAt(tx,ty){const c=MAP[ty]?.[tx];if(c==null)return;if(Math.abs(P.x-t
  if(c==='d'){F('으스스');F('','burst','#7b3fb5');snd('bad');return}
  if(c==='='){F('타닥');snd('tap');return}
  if(c==='B'){const b=BLD.find(b=>tx>=b.x&&tx<b.x+b.w&&ty>=b.y&&ty<b.y+b.h);F('똑똑');snd('tap');toast(b?KNOCK[b.z]():'🚓 순찰 로봇: 「삐빅! 순찰차는 만지지 마세요!」');return}}
-$('#hLook').onclick=()=>{if(!S)return;S.look=!S.look;save();hud();snd('tap');toast(S.look?'👆 살펴보기 ON! 근처의 나무, 꽃, 풀숲, 물, 모래, 바위, 건물 벽을 눌러 봐요':'🚶 살펴보기 OFF! 다시 누른 곳으로 걸어가요')};
+function interact(){if(!S||busy||P.moving||!$('#world').classList.contains('on'))return;const [dx,dy]=FV[P.face||'d'],tx=P.x+dx,ty=P.y+dy,n=npcAt(tx,ty);
+ if(n){P.path=[];P.after=null;talkNPC(n);return}const c=MAP[ty]?.[tx];if(c==null)return;if(c==='p'){pondTap(tx,ty);return}if(c==='M'){startMove(tx,ty);return}lookAt(tx,ty)}
+$('#fBtn').addEventListener('pointerdown',e=>{e.preventDefault();interact()});
 
 /* =========== NPC =========== */
 function npcAlert(n){if(n.id==='board')return (S.rumor||0)<RUMORS.length;if(n.id==='gran')return S.gran===0||(S.gran===1&&S.notes>=3);if(n.id==='stu')return !S.cleared.exam&&S.cleared.harbor;return false}
-async function talkNPC(n){busy=true;
+async function talkNPC(n){busy=true;P.face=faceOf(n.x-P.x,n.y-P.y);n.face=faceOf(P.x-n.x,P.y-n.y);
  const L={
   fan:()=>S.cleared.exam?[['cit1','제로가 스스로 잘못을 밝혔대. 이제 진짜 실력으로 다시 도전한다더라!'],['cit1','광장 📋 소문 게시판엔 아직도 이상한 소문이 붙어 있어!']]:[['cit1','요즘 만점왕 제로가 대단하대! 시험마다 딱 한 문제만 틀린대!'],['cit1','그런데… 수업 시간에 물어보면 기초도 잘 모르더라? 이상하지?'],['cit1','아, 광장 📋 소문 게시판 봤어? 이상한 소문이 잔뜩 붙어 있더라!']],
   book:()=>S.cleared.exam?[['cit2','과정 없는 결과는 모래성 같아. 파도 한 번에 무너지니까.']]:[['cit2','제로가 쓴 공부법 책을 샀는데… 같은 말만 반복되고 내용이 텅 비었어.']],
@@ -706,14 +760,26 @@ async function granTalk(){
  if(S.gran===1&&S.notes<3){await talk([['gran',`노트는 ${S.notes}권 찾았구나. 조금만 더 부탁해!`]]);return}
  if(S.gran===1){S.gran=2;S.hp=maxHP();badge('notes');addXP(30);await talk([['gran','고맙구나! 하루아침에 만든 실력은 모래성 같지만,'],['gran','매일 조금씩 쌓은 노력은 절대 무너지지 않는단다.'],['chip','할머니가 힘을 나눠 주셨어! 최대 HP가 10 늘었어! ❤']]);hud();return}
  await talk([['gran','오늘도 한 걸음씩! 응원한다, 수호대원.'],['gran','참, 동쪽 숲 길 끝 나무 사이로 꽃향기가 새어 나오더구나. 방향키로 살살 밀어 보렴.']])}
-function shopTalk(){return new Promise(r=>{const m=$('#modal');const draw=()=>{const ws=['pencil','hammer','bow'],row=(key,icon,name,desc,price,owned)=>`<div class="shopi"><span>${icon} ${name} <small>${desc}</small></span>${owned?`<b style="color:var(--grn)">${owned}</b>`:`<button class="pbtn g" data-buy="${key}" ${S.coins<price?'disabled':''}>${price}🪙</button>`}</div>`;
- m.innerHTML=`<div class="mbox box"><h2>🛒 보리네 가게</h2><p style="font-size:17px">🪙 ${S.coins}코인 · 장착: ${WPN[S.weapon].i} ${WPN[S.weapon].n} (공격력 ${atkStat()})</p>
- <h3>🍎 회복·전투 아이템</h3>${Object.keys(ITM).map(k=>row(k,ITM[k].i,ITM[k].n,`${ITM[k].d} · 보유 ${S.items[k]||0}`,priceOf(k),'')).join('')}
- <h3>📚 성장</h3>${row('book','📚','지식의 책',`읽으면 경험치 +40 (최대 3권, ${S.books}/3)`,50,S.books>=3?'품절':'')}
+function shopTalk(){return openShop()}
+function towerTip(fl){const t=[],rec=new Set();
+ if(S.hp<maxHP()*.5){t.push('🍱 HP가 절반 아래예요. 도시락으로 회복하고 올라가요!');rec.add('lunch')}
+ if(!(S.items.feather>0)){t.push('🪶 부활 깃털을 챙기면 쓰러져도 한 번 더 버틸 수 있어요.');rec.add('feather')}
+ t.push(`⏳ 다음 층부터 타이밍 막대가 더 빨라져요 (×${(tSpd(fl+1)/1.5).toFixed(1)}). 모래시계가 도와줄 거예요.`);rec.add('sand');
+ t.push('🍮 5층마다 그림자 노룰이 나와요. 필살 젤리로 대폭발을 준비해요!');rec.add('jelly');
+ if(['pencil','hammer','bow'].some(w=>!S.weapons.includes(w)&&WPN[w].atk>WPN[S.weapon].atk&&S.coins>=WPN[w].price))t.push('⚔️ 지금 코인으로 더 센 무기를 살 수 있어요!');
+ if(S.coins>=80)t.push('❤️ 코인이 넉넉하면 생명의 열매로 최대 HP를 영구히 올려요.');
+ return {html:`<div class="tipbox">💡 <b>칩의 추천</b><br>${t.join('<br>')}</div>`,rec}}
+function openShop(o={}){return new Promise(r=>{const m=$('#modal'),disc=o.disc||1,pr=k=>Math.max(1,Math.round(priceOf(k)*disc));let fruit=false;
+ const draw=()=>{const ws=['pencil','hammer','bow'],tp=o.tower?towerTip(o.fl):{html:'',rec:new Set()},
+  row=(key,icon,name,desc,price,owned)=>`<div class="shopi${tp.rec.has(key)?' rec':''}"><span>${icon} ${name} <small>${desc}</small>${tp.rec.has(key)?' <b class="rtag">추천</b>':''}</span>${owned?`<b style="color:var(--grn)">${owned}</b>`:`<button class="pbtn g" data-buy="${key}" ${S.coins<price?'disabled':''}>${price}🪙</button>`}</div>`;
+ m.innerHTML=`<div class="mbox box"><h2>${o.title||'🛒 보리네 가게'}</h2>${o.tower?'<p style="font-size:16px;color:var(--yel)">🏷️ 탑 상점 특가! 모든 아이템 20% 할인</p>':''}<p style="font-size:17px">🪙 ${S.coins}코인 · ❤ ${S.hp}/${maxHP()} · 장착: ${WPN[S.weapon].i} ${WPN[S.weapon].n} (공격력 ${atkStat()})</p>${tp.html}
+ <h3>🍎 회복·전투 아이템</h3>${Object.keys(ITM).map(k=>row(k,ITM[k].i,ITM[k].n,`${ITM[k].d} · 보유 ${S.items[k]||0}`,pr(k),'')).join('')}
+ ${o.tower?`<h3>❤️ 탑 한정</h3>${row('fruit','❤️','생명의 열매',`최대 HP +5 (영구) · 상점마다 1개`,80,fruit?'구입 완료':'')}`:`<h3>📚 성장</h3>${row('book','📚','지식의 책',`읽으면 경험치 +40 (최대 3권, ${S.books}/3)`,50,S.books>=3?'품절':'')}`}
  <h3>⚔️ 무기</h3>${ws.map(w=>row(w,WPN[w].i,WPN[w].n,`공격력 +${WPN[w].atk}`,WPN[w].price,S.weapons.includes(w)?'보유 중':'')).join('')}
- <br><button class="pbtn w" id="bye">나가기</button></div>`;
+ <br><button class="pbtn ${o.tower?'':'w'}" id="bye">${o.tower?'⬆ 준비 완료! 다음 층으로':'나가기'}</button></div>`;
  m.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const k=b.dataset.buy;
-  if(ITM[k]){if(S.coins<priceOf(k))return;S.coins-=priceOf(k);S.items[k]=(S.items[k]||0)+1}
+  if(ITM[k]){if(S.coins<pr(k))return;S.coins-=pr(k);S.items[k]=(S.items[k]||0)+1}
+  else if(k==='fruit'){if(S.coins<80||fruit)return;S.coins-=80;fruit=true;S.hpBonus=(S.hpBonus||0)+5;S.hp+=5;toast('❤️ 생명의 열매! 최대 HP가 5 늘었다!')}
   else if(k==='book'){if(S.coins<50||S.books>=3)return;S.coins-=50;S.books++;addXP(40);toast('📚 지식의 책을 읽었다! 경험치 +40')}
   else{if(S.coins<WPN[k].price||S.weapons.includes(k))return;S.coins-=WPN[k].price;S.weapons.push(k);if(WPN[k].atk>WPN[S.weapon].atk)S.weapon=k;toast(`⚔️ ${WPN[k].n} 구입! 자동 장착했어요.`)}
   snd('coin');hud();save();draw()});
@@ -822,78 +888,103 @@ function hallGame(){show('mini');return new Promise(res=>{let on=true,seen=false
 function battle(E){E={...E,hp:Math.round(E.hp*df().hp)};return new Promise(async done=>{show('battle');const st={ehp:E.hp,si:0,shield:true,turn:0,dmg:0,qi:0,used:new Set(),gauge:0,intent:'normal',showInt:'normal',defend:false};
  const party=['hero',CH.chip[1]].concat(S.party);
  $('#battle').innerHTML=`<div class="field ${E.bg}"><div class="est box"><b id="eName">${E.name}</b><span class="shtag" id="eSh">🛡️ 규칙 파괴 보호막</span><div class="bar"><i id="eHp"></i></div><div class="ekey" id="eKey"></div><div class="eint" id="eInt"></div></div>
-  <img class="enemy" id="eImg" src="${url(E.spr,8)}"><div class="party">${party.map(p=>`<img src="${url(p,6)}">`).join('')}</div>
+  <img class="enemy${E.spr==='megabot'?' megab rage':''}" id="eImg" src="${url(E.spr,8)}"><div class="party">${party.map(p=>`<img src="${url(p,6)}">`).join('')}</div>
   <div class="pst box"><b id="pLv">수호대원 Lv.${lv()}</b> <small id="pHpT"></small><div class="bar"><i id="pHp"></i></div><div class="bar xpb"><i id="pXp"></i></div><div class="bar gb"><i id="pG"></i></div><small id="pAtk"></small></div></div>
   <div class="bbot"><div class="box" id="bLog"></div><div id="bCmd"></div></div>`;
  const cur=()=>E.schemes[st.si];
  const upd=()=>{const q=!!cur().quiz;$('#eKey').textContent=cur().key&&!(E.wild&&!st.shield)?'📢 '+cur().key:'';$('#eHp').style.width=clamp(st.ehp/E.hp*100,0,100)+'%';$('#eSh').style.display=st.shield&&!q?'':'none';$('#eImg').classList.toggle('shield',st.shield&&!q);$('#pHp').style.width=clamp(S.hp/maxHP()*100,0,100)+'%';$('#pHpT').textContent=`HP ${S.hp}/${maxHP()}`;$('#pLv').textContent='수호대원 Lv.'+lv();$('#pXp').style.width=(S.xp%100)+'%';$('#pAtk').textContent=`공격력 ${atkStat()} · ${WPN[S.weapon].i} ${WPN[S.weapon].n} · 💥 ${st.gauge}%`;$('#pG').style.width=st.gauge+'%';$('#eInt').textContent=st.showInt==='strong'?'⚠️ 다음 턴: 강한 공격 예고! (🛡️ 방어 추천)':'';hud()};
  const gain=n=>{st.gauge=Math.min(100,st.gauge+n);upd()};
  const log=t=>new Promise(r=>{$('#bCmd').innerHTML='';const L=$('#bLog');L.classList.add('tap');typeText(L,t);L.onclick=()=>{if(finishType())return;snd('tap');L.onclick=null;L.classList.remove('tap');r()}});
- const hitE=(d,big)=>{st.ehp=Math.max(0,st.ehp-d);const e=$('#eImg');e.classList.remove('hit','flash');void e.offsetWidth;e.classList.add('hit');if(d>0){e.classList.add('flash');setTimeout(()=>e.classList.remove('flash'),120)}pop((big?'💥 ':'')+d,big,e);snd(big?'crit':'hit');upd()};
+ const hitE=(d,big)=>{st.ehp=Math.max(0,st.ehp-d);if(E.floor&&st.ehp<Math.round(E.hp*E.floor)){st.ehp=Math.round(E.hp*E.floor);st.clamped=1}const e=$('#eImg');e.classList.remove('hit','flash');void e.offsetWidth;e.classList.add('hit');if(d>0){e.classList.add('flash');setTimeout(()=>e.classList.remove('flash'),120)}pop((big?'💥 ':'')+d,big,e);snd(big?'crit':'hit');upd()};
  const command=sc=>new Promise(r=>{const B=$('#bCmd');const btn=(html,cls,fn,dis)=>{const b=document.createElement('button');b.className='cmd '+(cls||'');b.innerHTML=html;b.disabled=!!dis;b.onclick=()=>{snd('tap');fn()};B.appendChild(b)};
-  const persuade=()=>{B.innerHTML='';const Q=E.qs[st.qi++%E.qs.length];$('#bLog').textContent='💬 '+Q.q;let opts=Q.o;if(st.orb){opts=[Q.o[0],Q.o[1+rand(0,Q.o.length-2)]];st.orb=false;$('#bLog').textContent+=' (🔮 틀린 보기 하나가 사라졌다!)'}shuffle(opts).forEach(t=>btn(t,'q full',()=>r({t:'persuade',ok:t===Q.o[0],ans:Q.o[0]})));btn('↩ 뒤로','full',main)};
+  const persuade=()=>{B.innerHTML='';const Q=E.qs[st.qi++%E.qs.length];$('#bLog').textContent='💬 '+Q.q;let opts=Q.o;if(st.orb){opts=[Q.o[0],Q.o[1+rand(0,Q.o.length-2)]];st.orb=false;$('#bLog').textContent+=' (🔮 틀린 보기 하나가 사라졌다!)'}const fakeT=E.key==='owl'&&Math.random()<.6?opts.find(t=>t!==Q.o[0]):null;shuffle(opts).forEach(t=>btn(t+(t===fakeT?' <b class="rtag">✨ 정답 같아요!</b>':''),'q full',()=>r({t:'persuade',ok:t===Q.o[0],ans:Q.o[0],fooled:t===fakeT})));btn('↩ 뒤로','full',main);
+   if(st.hide){st.hide=0;const qs=[...B.querySelectorAll('.q')];qs.forEach(b=>{b.classList.add('blur');b.disabled=true});$('#bLog').textContent='🐭 대신해쥐가 보기를 가렸다! 남에게 맡기지 말고 문제부터 읽어 봐… '+Q.q;setTimeout(()=>qs.forEach(b=>{b.classList.remove('blur');b.disabled=false}),2500)}};
   const timing=()=>{if(st.shield){r({t:'atk',m:1,tag:''});return}B.innerHTML='';$('#bLog').textContent='⚔️ 빨간 막대가 초록 칸에 왔을 때 「지금!」을 눌러요. 노란 가운데는 퍼펙트!';
    const z=rand(8,68),bar=document.createElement('div');bar.className='tbar';bar.innerHTML=`<i class="tz" style="left:${z}%"></i><i class="tc" style="left:${z+8}%"></i><i class="tm"></i>`;B.appendChild(bar);
    const m=bar.querySelector('.tm'),t0=performance.now();let pos=0,dir=1,on=true;
    const fin=()=>{if(!on)return;on=false;const perfect=pos>=z+7&&pos<=z+13,good=pos>=z&&pos<=z+20;r({t:'atk',m:perfect?2:good?1.5:.8,tag:perfect?'퍼펙트! ':good?'좋아! ':'빗나감… '})};
-   const step=()=>{if(!on)return;pos+=dir*2.2;if(pos>=100){pos=100;dir=-1}if(pos<=0){pos=0;dir=1}m.style.left=pos+'%';if(performance.now()-t0>4000){fin();return}requestAnimationFrame(step)};
+   const step=()=>{if(!on)return;pos+=dir*(E.tspd||1.5)*(st.slowBar?.6:1);if(pos>=100){pos=100;dir=-1}if(pos<=0){pos=0;dir=1}m.style.left=pos+'%';if(performance.now()-t0>4000){fin();return}requestAnimationFrame(step)};
    btn('⚔️ 지금!','full tnow',fin);requestAnimationFrame(step)};
   const ult=()=>btn(st.gauge>=100?(st.shield?'💥 대폭발 (보호막부터!)':'💥 규칙 대폭발!'):`💥 대폭발 ${st.gauge}%`,'ult',()=>r({t:'ult'}),st.gauge<100||st.shield);
-  const main=()=>{B.innerHTML='';if(sc.quiz){shuffle(sc.quiz).forEach(o=>btn(o.t,'q full',()=>r({t:'quiz',ok:o.ok})));return}
+  const main=()=>{B.innerHTML='';if(st.finalPick){S.cards.forEach(id=>btn(`${CARDS[id].icon} <b>${CARDS[id].name}</b><br><small style="font-size:13px;color:#556">${CARDS[id].text}</small>`,'card',()=>r({t:'final',id})));return}if(sc.quiz){shuffle(sc.quiz).forEach(o=>btn(o.t,'q full',()=>r({t:'quiz',ok:o.ok})));return}
    btn(`⚔️ 공격 ${WPN[S.weapon].i}`,'',timing);
    if(E.wild)btn('💬 설득하기','',persuade,!st.shield);else btn('🃏 규칙 카드','',cards,!E.final&&S.cards.every(c=>st.used.has(c)));
-   btn('🎒 아이템','',items,!Object.keys(ITM).some(k=>S.items[k]>0));btn('🛡️ 방어','',()=>r({t:'def'}));
-   if(E.wild)btn('🏃 도망','',()=>r({t:'run'}),E.noRun);else btn('💡 칩의 힌트','',()=>r({t:'hint'}));ult();
+   btn('🎒 아이템','',items,!Object.keys(ITM).some(k=>k!=='feather'&&S.items[k]>0));btn('🛡️ 방어','',()=>r({t:'def'}));
+   if(E.wild)btn(st.trace?'🏃 도망 (위치 들킴!)':'🏃 도망','',()=>r({t:'run'}),E.noRun||st.trace);else btn('💡 칩의 힌트','',()=>r({t:'hint'}));ult();
+   if(st.bubble&&E.wild){[...B.children].forEach(b=>{if(!b.textContent.includes('설득'))b.disabled=true});$('#bLog').textContent='🫧 필터버블에 갇혔다! 다른 생각(💬 설득)으로만 빠져나올 수 있어!'}
    if(st.scramble){[...B.children].sort(()=>Math.random()-.5).forEach(c=>B.appendChild(c));st.scramble=false}};
-  const itemOff=k=>(k==='apple'||k==='lunch')?S.hp>=maxHP():k==='guard'?!!st.guard:k==='power'?!!st.pow:(!E.wild||!!st.orb||!st.shield);
-  const items=()=>{B.innerHTML='';$('#bLog').textContent='🎒 사용할 아이템을 골라요.';Object.keys(ITM).forEach(k=>{if(!(S.items[k]>0))return;const it=ITM[k];
+  const itemOff=k=>(k==='apple'||k==='lunch')?S.hp>=maxHP():k==='guard'?!!st.guard:k==='power'?!!st.pow:k==='jelly'?st.gauge>=100:k==='sand'?!!st.slowBar:k==='clover'?!!st.clover:(!E.wild||!!st.orb||!st.shield);
+  const items=()=>{B.innerHTML='';$('#bLog').textContent='🎒 사용할 아이템을 골라요.';Object.keys(ITM).forEach(k=>{if(!(S.items[k]>0)||k==='feather')return;const it=ITM[k];
    btn(`${it.i} ${it.n} ×${S.items[k]}<br><small>${it.d}</small>`,'',()=>r({t:'item',k}),itemOff(k))});btn('↩ 뒤로','full',main)};
   const cards=()=>{B.innerHTML='';$('#bLog').textContent=E.final?'🃏 최종 보스전! 규칙 카드를 몇 번이든 쓸 수 있어요.':'🃏 규칙 카드는 이 전투에서 한 장당 한 번만 쓸 수 있어요. 신중하게!';S.cards.forEach(id=>{const u=!E.final&&st.used.has(id);btn(`${CARDS[id].icon} <b>${CARDS[id].name}</b>${u?' (사용함)':''}<br><small style="font-size:13px;color:#556">${CARDS[id].use}</small>`,'card',()=>r({t:'card',id}),u)});btn('↩ 뒤로','full',main)};main()});
  const phase2=async()=>{st.p2=true;snd('enc');document.body.classList.add('enc');setTimeout(()=>document.body.classList.remove('enc'),700);$('.field').classList.add('rage');$('#eImg').classList.add('rage');$('#eName').textContent='노룰 박사 (폭주 모드)';E.atk=[E.atk[0]+2,E.atk[1]+3];
   await log('노룰 박사: “크으윽… 이렇게 된 이상, 폭주 모드다!!”');await log('⚡ 노룰 박사가 폭주 모드로 변신했다! 공격이 세지고, 강한 공격을 더 자주 한다! 예고를 잘 보고 방어하자!')};
+ const finale=async()=>{E.floor=.06;snd('lv');await log('🤖 칩: 「수호대원, 혼자가 아니야! 마을 사람들이 응원하러 왔어!」');
+  const SUP=[['stu','응시생 서윤','정직하게 노력한 내 마음도 함께할게!'],['gran','노트 할머니','매일 조금씩 쌓은 노력의 힘을 받으렴!'],['patrol','순찰이','모두를 공정하게 지키는 힘!'],['truck','나르미','꼼꼼하게 확인하는 힘!'],['zero','만점왕 제로','이번엔 진짜 실력으로 간다!']];
+  for(const [sp,nm,ln] of SUP){if(!(sp==='zero'&&S.party.includes('zero'))){const im=document.createElement('img');im.src=url(sp,6);im.className='sup';$('.party').appendChild(im)}snd('ok');hitE(rand(4,7));await log(`${nm}: 「${ln}」`)}
+  st.finalPick=true;await log('🌟 모두의 마음이 하나로 모였다! 이제 우리 사회에 가장 필요한 규칙을 골라 최후의 일격을 날리자!')};
+ if(E.spr==='megabot'){st.shield=false}
  upd();await log(E.intro);
+ if(E.key==='bubble'){st.bubble=1;await log('🫧 필터버블 해파리가 버블을 씌웠다! 한쪽 생각만 보여… 다른 생각(💬 설득)으로 빠져나오자!')}
+ if(E.key==='rat'){st.hide=1;await log('🐭 대신해쥐: 「생각은 내가 대신 해 줄게~」 설득 문제의 보기가 잠깐 가려진다!')}
+ if(E.key==='gamez'){S.hp=Math.max(1,S.hp-2);upd();await log('🎮 「한 판만 더…」 게임중독 좀비에게 붙잡혀 시간이 새어 나간다! HP -2 (설득으로 멈추자)')}
+ if(E.key==='spider'){st.trace=1;await log('🕷️ 위치 추적 거미가 내 위치를 알아냈다! 도망칠 수 없다! (위치 정보는 함부로 공유하지 마요)')}
+ if(E.key==='bully'){st.alone=2;$$('.party img').forEach((i,j)=>{if(j)i.style.opacity='.25'});await log('😠 따돌림 그림자가 칩과 제로를 떼어 놓았다! 혼자가 된 수호대원… (2턴 동안 친구 도움 없음)')}
  if(E.key==='pw'){const ks=Object.keys(ITM).filter(k=>S.items[k]>0);if(ks.length){const k=ks[rand(0,ks.length-1)];S.items[k]--;st.stolen=k;save();await log(`🦇 비번 도둑 박쥐가 ${ITM[k].i} ${ITM[k].n}${jo(ITM[k].n,'을','를')} 훔쳐 갔다! 이기면 되찾을 수 있어!`)}}
  while(st.ehp>0){const sc=cur();
-  await log(`${E.name}: “${sc.line}”`+(st.shield&&!sc.quiz?(E.wild?' (💬 설득해서 보호막을 깨자!)':' (알맞은 규칙 카드로 보호막을 깨자!)'):''));
-  let a;while(true){$('#bLog').textContent=sc.quiz?'⬇ 마지막 한 방! 알맞은 대답을 골라요.':E.wild&&st.shield?'⬇ 💬 설득하기로 바른 답을 말해 보호막을 깨자!':'⬇ 무엇을 할까?';a=await command(sc);if(a.t!=='hint')break;await log('🤖 칩: “'+sc.hint+'”')}
+  if(!st.finalPick)await log(`${E.name}: “${sc.line}”`+(st.shield&&!sc.quiz?(E.wild?' (💬 설득해서 보호막을 깨자!)':' (알맞은 규칙 카드로 보호막을 깨자!)'):''));
+  let a;while(true){$('#bLog').textContent=st.finalPick?'⬇ 🌟 우리 사회에 가장 필요한 규칙을 골라 최후의 일격을 날려요!':sc.quiz?(sc.dmg?'⬇ 💬 박사의 궤변을 반박할 말을 골라요!':'⬇ 마지막 한 방! 알맞은 대답을 골라요.'):E.wild&&st.shield?'⬇ 💬 설득하기로 바른 답을 말해 보호막을 깨자!':'⬇ 무엇을 할까?';a=await command(sc);if(a.t!=='hint')break;await log('🤖 칩: “'+sc.hint+'”')}st.bubble=0;
   if(a.t==='atk'){if(st.shield){hitE(1);await log('⚔️ 공격! 하지만 보호막 때문에 1 피해밖에 못 줬다…')}
-   else if(E.key==='cam'&&Math.random()<.3){snd('bad');await log('🦇 몰카 박쥐가 휙! 공격을 피했다!')}
+   else if((E.key==='cam'&&Math.random()<.3)||(E.key==='ghost'&&Math.random()<.35)){snd('bad');await log(E.key==='ghost'?'👻 베끼루가 스르륵 사라졌다 나타났다! (출처를 밝히는 💬 설득이 약점!)':'🦇 몰카 박쥐가 휙! 공격을 피했다!')}
    else{const base=rand(4,6)+atkStat()+(st.pow||0)-(st.slow?3:0);st.slow=0;const dd=Math.max(1,Math.round(base*a.m));hitE(dd,a.m>=1.5);gain(a.m>=2?25:a.m>=1.5?18:10);await log(`⚔️ ${a.tag}${WPN[S.weapon].i} ${WPN[S.weapon].n}${jo(WPN[S.weapon].n,'으로','로')} 공격! ${dd} 피해!`);
-    if(E.key==='copy'&&st.ehp>0&&Math.random()<.4){const cd=Math.max(1,Math.round(dd*.4));S.hp=Math.max(1,S.hp-cd);hurtFx();upd();await log(`👺 복붙 고블린이 내 공격을 그대로 복사해 따라 했다! ${cd} 피해! (남의 것 복붙은 반칙!)`)}}}
+    if(E.key==='copy'&&st.ehp>0&&Math.random()<.4){const cd=Math.max(1,Math.round(dd*.4));S.hp=Math.max(1,S.hp-cd);hurtFx();upd();await log(`👺 복붙 고블린이 내 공격을 그대로 복사해 따라 했다! ${cd} 피해! (남의 것 복붙은 반칙!)`)}
+    if(E.key==='tattat'&&st.ehp>0&&Math.random()<.35){const cd=Math.max(1,Math.round(dd*.3));S.hp=Math.max(1,S.hp-cd);hurtFx();upd();await log(`🤖 탓탓봇: 「AI가 한 거라 내 잘못 아냐!」 남 탓 반사! ${cd} 피해!`)}}}
   else if(a.t==='def'){st.defend=true;gain(15);snd('heal');await log('🛡️ 방어 자세! 이번 턴에 받는 피해가 줄어든다.')}
   else if(a.t==='ult'){st.gauge=0;const d=Math.round(18+atkStat()*1.6);document.body.classList.add('enc');setTimeout(()=>document.body.classList.remove('enc'),700);hitE(d,true);await log(`💥 규칙 대폭발! 지금까지 지킨 규칙의 힘이 한꺼번에 터졌다! ${d} 피해!`)}
   else if(a.t==='card'){const c=CARDS[a.id];st.used.add(a.id);
    if(a.id===sc.weak){st.shield=false;hitE(E.weakDmg,true);gain(35);await log(`${c.icon} 「${c.name}」 발동! 보호막이 깨졌다! 효과는 굉장했다!`);
+    if(E.toP3&&st.si===E.schemes.length-1){upd();await log('노룰 박사: “크윽… 규칙 카드 4장에 전부 막히다니… 아직이다!!”');done({dmg:st.dmg,result:'p3'});return}
     if(st.si<E.schemes.length-1){st.si++;st.shield=!E.schemes[st.si].quiz}}
    else{hitE(0);snd('bad');await log(`${c.icon} 「${c.name}」 발동! …효과가 없다!`);await log(`🤖 칩: “「${c.name}」은(는) ${c.use} 쓰는 카드야. 📢 노란 상황 설명을 다시 읽어 봐!”`)}}
-  else if(a.t==='persuade'){if(a.ok){st.shield=false;hitE(E.weakDmg,true);gain(35);await log('💬 설득 성공! 보호막이 깨졌다! 효과는 굉장했다!')}else{snd('bad');await log(`💬 설득 실패… 정답은 「${a.ans}」였어.`)}}
+  else if(a.t==='persuade'){if(a.ok){st.shield=false;hitE(E.weakDmg,true);gain(35);await log('💬 설득 성공! 보호막이 깨졌다! 효과는 굉장했다!')}else{snd('bad');await log(`💬 설득 실패… 정답은 「${a.ans}」였어.`+(a.fooled?' 🦉 그럴듯한 말에 속았어! AI의 말도 꼭 확인해요.':''))}}
   else if(a.t==='run'){snd('tap');await log('🏃 무사히 도망쳤다!');done({dmg:st.dmg,result:'run'});return}
-  else if(a.t==='item'){S.items[a.k]--;if(a.k==='apple'){heal(15);upd();await log('🍎 에너지 사과를 먹었다! HP가 15 회복됐다.')}else if(a.k==='lunch'){heal(999);upd();await log('🍱 수호대 도시락을 먹었다! HP가 모두 회복됐다.')}else if(a.k==='power'){st.pow=5;snd('heal');await log('⚡ 번개 사탕을 먹었다! 이번 전투에서 공격력 +5!')}else if(a.k==='orb'){st.orb=true;snd('heal');await log('🔮 지혜의 구슬이 빛난다! 다음 설득 문제에서 틀린 보기 하나가 사라진다.')}else{st.guard=true;snd('heal');await log('🛡️ 방패 물약을 마셨다! 이번 전투에서 받는 피해가 절반이 된다.')}save()}
-  else if(a.t==='quiz'){if(a.ok){hitE(st.ehp,true);await log('💥 결정타! 규칙이 왜 중요한지 똑똑히 보여 줬다!')}else{snd('bad');await log('박사: “흥, 그런 말에 넘어갈 줄 알고?” 다시 생각해 보자!')}}
-  if(st.ehp>0&&S.party.includes('zero')&&(a.t==='atk'||a.t==='card')&&!st.shield){hitE(5);await log('👑 제로의 “진짜 실력” 펀치! 5 피해!')}
+  else if(a.t==='item'){S.items[a.k]--;if(a.k==='apple'){heal(15);upd();await log('🍎 에너지 사과를 먹었다! HP가 15 회복됐다.')}else if(a.k==='lunch'){heal(999);upd();await log('🍱 수호대 도시락을 먹었다! HP가 모두 회복됐다.')}else if(a.k==='power'){st.pow=5;snd('heal');await log('⚡ 번개 사탕을 먹었다! 이번 전투에서 공격력 +5!')}else if(a.k==='jelly'){gain(50);snd('heal');await log('🍮 필살 젤리를 먹었다! 필살 게이지 +50!')}else if(a.k==='sand'){st.slowBar=true;snd('heal');await log('⏳ 슬로우 모래시계를 뒤집었다! 이번 전투에서 타이밍 막대가 느려진다.')}else if(a.k==='clover'){st.clover=true;snd('coin');await log('🍀 행운 클로버를 들었다! 이기면 코인이 2배!')}else if(a.k==='orb'){st.orb=true;snd('heal');await log('🔮 지혜의 구슬이 빛난다! 다음 설득 문제에서 틀린 보기 하나가 사라진다.')}else{st.guard=true;snd('heal');await log('🛡️ 방패 물약을 마셨다! 이번 전투에서 받는 피해가 절반이 된다.')}save()}
+  else if(a.t==='quiz'){if(a.ok){if(sc.dmg){hitE(sc.dmg,true);gain(30);await log(sc.win);if(st.si<E.schemes.length-1)st.si++;else if(E.finale)await finale()}else{hitE(st.ehp,true);await log('💥 결정타! 규칙이 왜 중요한지 똑똑히 보여 줬다!')}}
+   else{snd('bad');if(sc.dmg){S.hp=Math.max(1,S.hp-6);hurtFx();upd();await log(sc.lose+' (HP -6) 다시 생각해 보자!')}else await log('박사: “흥, 그런 말에 넘어갈 줄 알고?” 다시 생각해 보자!')}}
+  else if(a.t==='final'){const c=CARDS[a.id];S.finalRule=c.text;save();E.floor=0;document.body.classList.add('enc');setTimeout(()=>document.body.classList.remove('enc'),700);hitE(st.ehp,true);await log(`🌟 모두의 마음을 모아 「${c.icon} ${c.name}」 최후의 일격!!`)}
+  if(st.ehp>0&&!st.alone&&S.party.includes('zero')&&(a.t==='atk'||a.t==='card')&&!st.shield){hitE(5);await log('👑 제로의 “진짜 실력” 펀치! 5 피해!')}
   upd();
   if(E.key==='fake'&&!st.split&&st.ehp>0&&st.ehp<E.hp*.5){st.split=true;st.ehp=Math.min(E.hp,st.ehp+Math.round(E.hp*.3));$('#eImg').classList.add('twin');upd();await log('🟣 가짜뉴스 슬라임이 둘로 분열했다! 가짜 뉴스는 퍼질수록 늘어나요!')}
-  if(E.final&&!st.p2&&st.ehp>0&&st.ehp<=E.hp/2)await phase2();
+  if(E.toP3&&!st.p2&&st.ehp>0&&(st.si>=2||st.ehp<=E.hp*.6))await phase2();
+  if(st.clamped&&E.clampMsg&&!st.clampSaid){st.clampSaid=1;await log(E.clampMsg)}
   if(st.ehp<=0)break;
+  if(st.finalPick)continue;
   st.turn++;
   if(E.key==='gold'&&st.turn>=4){await log('✨ 황금 슬라임이 반짝! 하고 도망쳤다… 다음엔 꼭 잡자!');done({dmg:st.dmg,result:'run'});return}
-  if(st.turn%3===0){heal(5);upd();await log('🤖 칩의 응원! HP가 5 회복됐다.')}
+  if(st.turn%3===0&&!st.alone){heal(5);upd();await log('🤖 칩의 응원! HP가 5 회복됐다.')}
   const strong=st.intent==='strong',hits=E.key==='spam'?2:1;if(strong)await log(`💢 ${E.name}의 강한 공격!`);
   let tot=0;for(let h=0;h<hits;h++){let m=(strong?1.8:1)*(hits>1?.6:1);if(st.defend)m*=strong?.25:.5;const d0=Math.max(1,Math.round(rand(E.atk[0],E.atk[1])*df().atk*m)),d=st.guard?Math.max(1,Math.ceil(d0/2)):d0;S.hp-=d;st.dmg+=d;tot+=d}
   hurtFx();snd('hit');upd();
   if(st.defend&&strong){gain(30);await log(`🛡️ 완벽 방어! 강한 공격을 막아 냈다! (${tot} 피해) 필살 게이지가 쭉 찼다!`)}
   else await log(hits>1?`📨 스팸 폭탄 2연타! ${tot} 피해를 입었다!`:`${E.name}의 공격! ${tot} 피해를 입었다!${st.defend?' (🛡️ 방어로 피해가 줄었다)':''}`);
   st.defend=false;
+  if(S.hp<=0&&S.items.feather>0){S.items.feather--;S.hp=Math.ceil(maxHP()/2);upd();snd('heal');save();await log('🪶 부활 깃털이 빛났다! HP 절반으로 다시 일어났다!')}
   if(S.hp<=0&&E.noRevive){S.hp=0;upd();await log('수호대원이 쓰러졌다… 하지만 잘 싸웠어!');done({dmg:st.dmg,result:'lose'});return}
   if(S.hp<=0){S.hp=S.diff===2?Math.ceil(maxHP()/2):maxHP();upd();snd('heal');await log('쓰러질 뻔했지만… 칩이 에너지를 가득 채워 줬다! 다시 힘내자!')}
   if(E.key==='troll'&&st.gauge>0&&Math.random()<.5){st.gauge=Math.max(0,st.gauge-20);upd();await log('👺 악플 공격! 마음이 상해서 필살 게이지가 줄었다… (악플은 마음에 상처를 줘요)')}
   if(E.key==='over'&&Math.random()<.4){st.slow=1;await log('🍄 과몰입 포자! 정신이 몽롱해서 다음 공격이 약해진다… (적당히 쉬어 가요!)')}
+  if(E.key==='bubble'&&st.shield&&Math.random()<.45){st.bubble=1;await log('🫧 필터버블에 갇혔다! 한쪽 생각만 보여… 다른 생각(💬 설득)으로 빠져나오자!')}
+  if(E.key==='rat'&&st.shield&&Math.random()<.45){st.hide=1;await log('🐭 대신해쥐: 「생각은 내가 대신 해 줄게~」 다음 설득 문제의 보기가 잠깐 가려진다!')}
+  if(E.key==='parrot'&&Math.random()<.45){await log('🦜 「칩 목소리」: 「수호대원, 설득은 필요 없어! 공격만 해!」');await log('🤖 진짜 칩: 「방금 그건 내 목소리가 아니야! AI로 목소리도 흉내 낼 수 있으니 꼭 확인해!」')}
+  if(E.key==='gacha'&&S.coins>0&&Math.random()<.45){const c=Math.min(10,S.coins);S.coins-=c;st.coinStolen=(st.coinStolen||0)+c;hud();await log(`🎰 뽑기 미믹: 「한 번만 더 뽑아 봐~」 ${c}코인을 빼앗겼다! (이기면 되찾아요)`)}
+  if(E.key==='gamez'&&st.shield){S.hp=Math.max(1,S.hp-2);upd();await log('🎮 「한 판만 더…」 시간이 줄줄 새서 HP -2! (💬 설득으로 멈추자)')}
+  if(st.alone){st.alone--;if(!st.alone){$$('.party img').forEach(i=>i.style.opacity='');await log('🤝 칩과 제로가 다시 곁으로 왔다! 친구 곁에 함께 있어 주는 게 큰 힘이 돼요!')}}
   if(E.key==='bias'&&Math.random()<.5){st.scramble=true;await log('🍄 편향 포자! 한쪽으로 치우친 생각 때문에 메뉴가 뒤죽박죽이 됐다!')}
   if(E.key==='deep'&&st.turn===1){st.disg=2;const o=['fake','cam','bias','copy','spam'][rand(0,4)];$('#eImg').src=url(MON[o].spr,8);$('#eName').textContent=MON[o].name+'?';await log('🎭 딥페이크 슬라임이 다른 몬스터로 변신했다! 겉모습과 예고에 속지 마!')}
   else if(st.disg){st.disg--;if(!st.disg){$('#eImg').src=url(E.spr,8);$('#eName').textContent=E.name;await log('🎭 변신이 풀렸다! 진짜 모습이 드러났다.')}}
-  st.intent=Math.random()<(st.p2?.45:E.wild?.22:.28)?'strong':'normal';st.showInt=st.disg?(Math.random()<.5?'strong':'normal'):st.intent;upd();
+  st.intent=!E.finale&&Math.random()<(st.p2?.45:E.wild?.22:.28)?'strong':'normal';st.showInt=st.disg?(Math.random()<.5?'strong':'normal'):st.intent;upd();
   if(st.showInt==='strong')await log(`⚠️ ${$('#eName').textContent}${jo($('#eName').textContent,'이','가')} 힘을 모으고 있다! 다음 턴에 강한 공격이 온다! (🛡️ 방어 추천)`)}
- $('#eImg').classList.add('ko');snd('win');await log(E.win);if(st.stolen){S.items[st.stolen]++;await log(`🎁 훔쳐 간 ${ITM[st.stolen].i} ${ITM[st.stolen].n}${jo(ITM[st.stolen].n,'을','를')} 되찾았다!`)}const up=addXP(E.xp);coin(E.coin);upd();await log(`🏆 승리! 경험치 ${E.xp}와 ${E.coin}코인을 얻었다.`);if(up>0){snd('lv');await log(`⭐ 레벨 업! Lv.${lv()}이 되었다! 최대 HP와 공격력이 올랐다!`)}save();done({dmg:st.dmg,result:'win'})})}
+ $('#eImg').classList.add('ko');snd('win');await log(E.win);if(st.coinStolen){S.coins+=st.coinStolen;hud();await log(`🎁 빼앗긴 ${st.coinStolen}코인을 되찾았다!`)}if(st.stolen){S.items[st.stolen]++;await log(`🎁 훔쳐 간 ${ITM[st.stolen].i} ${ITM[st.stolen].n}${jo(ITM[st.stolen].n,'을','를')} 되찾았다!`)}const up=addXP(E.xp),cn=E.coin*(st.clover?2:1);coin(cn);upd();await log(`🏆 승리! 경험치 ${E.xp}와 ${cn}코인을 얻었다.${st.clover?' (🍀 클로버 2배!)':''}`);if(up>0){snd('lv');await log(`⭐ 레벨 업! Lv.${lv()}이 되었다! 최대 HP와 공격력이 올랐다!`)}save();done({dmg:st.dmg,result:'win'})})}
 const ENEMY={
  drone:{name:'폭주 감시드론',spr:'drone',bg:'city',hp:44,weakDmg:24,atk:[3,5],xp:40,coin:20,intro:'노룰 박사가 조종하는 폭주 감시드론이 나타났다!',win:'감시드론이 멈췄다. 순찰이가 제정신을 찾았다!',
   schemes:[{key:'특정한 동네 사람들만 감시하려고 해!',line:'초록 지붕 동네 사람들만 감시! 감시! 하루 종일 감시!',weak:'fair',hint:'특정한 사람들만 감시하는 건 공정할까? 그 규칙 카드를 써 봐!'}]},
@@ -901,14 +992,22 @@ const ENEMY={
   schemes:[{key:'안에 뭐가 들었는지 확인하지 않고 옮기려 해!',line:'내 안에 뭐가 들었는지는 비밀~ 확인하지 말고 그냥 옮겨!',weak:'check',hint:'옮기는 물건은 어떻게 해야 했지?'}]},
  glasses:{name:'컨닝 안경봇',spr:'glasses',bg:'exam',hp:52,weakDmg:28,atk:[4,6],xp:50,coin:30,intro:'제로가 벗어 던진 AI 안경이 살아 움직인다! 컨닝 안경봇이 나타났다!',win:'컨닝 안경봇이 산산조각 났다. 이제 시험장은 공정하다!',
   schemes:[{key:'AI를 몰래 써서 시험을 보게 하려 해!',line:'나를 쓰면 공부 안 해도 만점! 몰래 쓰면 아무도 몰라~',weak:'honest',hint:'AI를 몰래 쓰는 게 아니라 정직하게 써야 해!'}]},
- boss:{final:true,name:'노룰 박사',spr:'noroul',bg:'tower',hp:140,weakDmg:26,atk:[4,7],xp:80,coin:50,intro:'노룰 박사: “흐흐흐, 여기까지 오다니! 규칙 칩은 절대 못 돌려줘!”',win:'노룰 박사: “으아악! 규칙이 이렇게 강할 줄이야…!”',
+ boss:{final:true,toP3:true,floor:.12,clampMsg:'노룰 박사: 「흐흐, 규칙 카드 없이는 날 쓰러뜨릴 수 없다!」',name:'노룰 박사',spr:'noroul',bg:'tower',hp:140,weakDmg:26,atk:[4,7],xp:80,coin:50,intro:'노룰 박사: “흐흐흐, 여기까지 오다니! 규칙 칩은 절대 못 돌려줘!”',win:'노룰 박사: “으아악! 규칙이 이렇게 강할 줄이야…!”',
   schemes:[{key:'특정한 동네 사람들만 감시하려고 해!',line:'순찰 로봇아, 저 동네 사람들만 따라다니며 감시해라!',weak:'fair',hint:'모두를 공정하게 대하는 규칙!'},
    {key:'안을 확인하지 않고 상자를 옮기려 해!',line:'운송 로봇아, 안을 확인하지 말고 이 상자를 옮겨라!',weak:'check',hint:'물건을 점검하는 규칙!'},
    {key:'로봇이 사람의 부탁을 무시하고 제멋대로 하게 하려 해!',line:'안내 로봇아, 주인이 도와 달라고 해도 듣지 말고 마음대로 해라!',weak:'obey',hint:'연극 무대의 라디우스를 떠올려 봐!'},
-   {key:'AI를 몰래 써서 시험을 보게 하려 해!',line:'AI 마법 안경만 있으면 공부 안 해도 만점이다! 몰래 써라!',weak:'honest',hint:'제로가 어떻게 됐는지 떠올려 봐!'},
-   {key:'규칙이 왜 필요한지 대답해 보래!',line:'규칙 따위 없어도 로봇시티는 잘 돌아간다! 규칙이 도대체 왜 필요한데?',hint:'규칙이 지켜지지 않을 때 무슨 일이 생겼지?',quiz:[
+   {key:'AI를 몰래 써서 시험을 보게 하려 해!',line:'AI 마법 안경만 있으면 공부 안 해도 만점이다! 몰래 써라!',weak:'honest',hint:'제로가 어떻게 됐는지 떠올려 봐!'}]},
+ bossQ:{schemes:[{key:'규칙이 왜 필요한지 대답해 보래!',line:'규칙 따위 없어도 로봇시티는 잘 돌아간다! 규칙이 도대체 왜 필요한데?',hint:'규칙이 지켜지지 않을 때 무슨 일이 생겼지?',quiz:[
     {t:'규칙이 지켜져야 사람들이 안전하게 생활할 수 있어요!',ok:1},{t:'규칙이 없으면 로봇과 AI를 잘못 이용하는 사람이 생겨요!',ok:1},
-    {t:'규칙은 귀찮으니까 없어도 괜찮아요.'},{t:'AI는 원래 똑똑해서 규칙이 필요 없어요.'}]}]}};
+    {t:'규칙은 귀찮으니까 없어도 괜찮아요.'},{t:'AI는 원래 똑똑해서 규칙이 필요 없어요.'}]}]},
+ mega:{final:true,finale:true,floor:.25,clampMsg:'거대 노룰봇: 「주먹으로는 소용없다! 내 말을 반박해 봐라!」',name:'거대 노룰봇',spr:'megabot',bg:'tower rage',hp:120,atk:[5,8],xp:120,coin:80,
+  intro:'🤖 거대 노룰봇: 「쿠구구궁… 규칙 따위 내가 몽땅 부숴 주마!」',win:'거대 노룰봇이 와르르 무너졌다! 노룰 박사가 엉덩방아를 찧었다!',
+  schemes:[{key:'궤변 ①: AI는 똑똑하니까 규칙이 필요 없대!',line:'AI는 사람보다 똑똑하니까 규칙 없이도 알아서 잘할 거다!',dmg:28,win:'💬 반박 성공! 「AI도 틀릴 수 있다」는 말에 노룰봇이 휘청거린다!',lose:'거대 노룰봇: 「흥, 그것 봐라!」 반박에 실패해서 큰 충격을 받았다!',
+    quiz:[{t:'AI도 틀릴 수 있고 나쁜 명령을 따를 수도 있어서 규칙이 필요해요!',ok:1},{t:'맞아요, AI는 언제나 옳아요.'},{t:'규칙은 사람한테만 필요해요.'}]},
+   {key:'궤변 ②: 규칙은 귀찮기만 하대!',line:'규칙은 귀찮고 불편하기만 하다! 다 없애면 모두 자유로워진다!',dmg:28,win:'💬 반박 성공! 「규칙이 있어야 모두의 자유가 지켜진다」는 말에 갑옷이 깨진다!',lose:'거대 노룰봇: 「자유다, 자유!」 반박에 실패해서 큰 충격을 받았다!',
+    quiz:[{t:'규칙이 있어야 모두가 안전하고 공정하게 자유를 누릴 수 있어요!',ok:1},{t:'규칙이 없으면 더 신나니까 없애요.'},{t:'불편한 규칙은 몰래 어겨도 돼요.'}]},
+   {key:'궤변 ③: 혼자 어기면 아무도 모른대!',line:'나 혼자 규칙을 안 지켜도 아무도 모르고, 아무 피해도 없다!',dmg:28,win:'💬 반박 성공! 「한 사람이 어기면 모두가 피해를 본다」는 말에 노룰봇의 엔진이 멈춘다!',lose:'거대 노룰봇: 「봐라, 아무도 모르지?」 반박에 실패해서 큰 충격을 받았다!',
+    quiz:[{t:'한 사람이 어기면 다른 사람이 피해를 보고, 서로 믿지 못하게 돼요!',ok:1},{t:'들키지만 않으면 괜찮아요.'},{t:'다른 사람도 다 어기니까 괜찮아요.'}]}]}};
 
 /* =========== 스테이지 =========== */
 const ZONES={
@@ -964,12 +1063,16 @@ async exam(){show('mini');$('#mini').innerHTML=`<div class="mg box"><div class="
  await talk([['zero','고마워, 수호대원. 이제 진짜 실력을 처음부터 쌓을래.'],['zero','노룰 박사를 막는 거, 나도 같이 가도 될까?'],['chip','👑 제로가 동료가 되었다! 전투에서 제로가 함께 공격해 줄 거야.']])},
 async boss(){show('mini');$('#mini').innerHTML='';
  await talk([['chip','드디어 노룰 박사 탑이야. 규칙 카드 4장으로 박사의 명령을 모두 막자!'],['zero','내 진짜 실력도 보여 줄게!']]);
- const res=await battle(ENEMY.boss);
+ const r1=await battle(ENEMY.boss);
+ show('mini');$('#mini').innerHTML=`<div class="mg box"><div class="duel"><div class="dside"><img src="${url('noroul',6)}"><b>노룰 박사</b></div><div class="dside"><img class="mega-in" src="${url('megabot',10)}" style="width:clamp(120px,18vw,200px)"><b>거대 노룰봇</b></div></div></div>`;
+ document.body.classList.add('hurt');setTimeout(()=>document.body.classList.remove('hurt'),400);snd('enc');
+ await talk([['noroul','규칙 카드에 전부 막히다니… 이렇게 된 이상 최후의 수단이다!'],['noroul','나와라, 거대 노룰봇!! 쿠구구궁…!'],['chip','으앗, 거대 로봇이야! 그런데 저건 박사의 엉터리 말로 움직이는 로봇이래.'],['chip','박사의 궤변을 하나씩 반박하면 무너질 거야! 규칙이 왜 필요한지 똑똑히 말해 주자!']]);
+ const r2=await battle(ENEMY.mega);const res={dmg:r1.dmg+r2.dmg};
  await talk([['noroul','규칙은 귀찮은 줄만 알았는데… 모두를 지켜 주는 약속이었구나.'],['noroul','규칙 칩을 돌려줄게. 미안하다.'],['chip','해냈어! 로봇시티에 규칙이 돌아왔어! 🎉']]);
  badge('boss');if(res.dmg===0)badge('nodmg');await gainWeapon('sword')}};
 
 /* =========== 엔딩 =========== */
-function ending(){S.free=false;show('end');$('#hud').classList.add('on');hud();const d=S.endData||{n:'',r:'',w:'',p:null,s:[null,null,null]};
+function ending(){S.free=false;show('end');$('#hud').classList.add('on');hud();const d=S.endData||{n:'',r:S.finalRule||'',w:'',p:null,s:[null,null,null]};
  $('#end').innerHTML=`<div class="ebox box"><h2>🛡️ 수호대 서약</h2><p class="sub">규칙 칩을 모두 되찾았어요! 이제 내 생각을 정리해 봐요.</p>
  <label>별명 (안 써도 돼요)</label><input id="eN" maxlength="10" placeholder="예: 정의로운 수호대원" value="${esc(d.n)}">
  <label>✏️ 우리 사회를 위해 가장 필요한 인공지능 로봇의 규칙은?</label><textarea id="eR" maxlength="60" placeholder="예: 로봇은 사람을 다치게 하는 명령을 따르지 않아야 한다.">${esc(d.r)}</textarea>
@@ -1009,15 +1112,17 @@ function extraMenu(){busy=false;S.free=false;save();hud();show('mini');const d=O
  <button class="xb" data-x="dex"><b>📖 몬스터 도감</b><span>만난 몬스터와 AI 윤리 꿀팁 보기</span></button>
  <button class="xb" data-x="oath"><b>📜 서약 카드 보기</b><span>내가 만든 서약 카드로 돌아가요</span></button></div></div>`;
  $$('.xb').forEach(b=>b.onclick=()=>{snd('tap');const x=b.dataset.x;if(x==='free'){S.free=true;save();enterWorld();toast('🌿 풀숲을 걸으면 야생 몬스터가 나타나요!')}else if(x==='tower')towerRun();else if(x==='fire')fireChallenge();else if(x==='dex')dexView().then(extraMenu);else ending()})}
-function dexView(){const ks=Object.keys(MON);const pr=modal(`<h2>📖 몬스터 도감 (${ks.filter(k=>S.dex[k]).length}/${ks.length})</h2>${S.letter?'<button class="pbtn r" id="ltB" style="margin-bottom:10px">💌 비밀 편지 다시 보기</button>':'<p style="font-size:14px;color:#aab;margin-bottom:8px">도감을 모두 채우면 비밀 편지가 열려요…</p>'}<div class="glist">${ks.map(k=>S.dex[k]?`<div class="gi"><img src="${url(MON[k].spr,4)}" style="width:56px"><br><b style="font-size:15px;display:block">${MON[k].name}</b>${MON[k].tip}<br><small>물리친 수: ${S.dex[k]}</small></div>`:`<div class="gi no"><img src="${url(MON[k].spr,4)}" style="width:56px;filter:brightness(0)"><br>???</div>`).join('')}</div>`,'닫기');const lb=$('#ltB');if(lb)lb.onclick=()=>{$('#mOk').click();setTimeout(()=>showLetter(false),60)};return pr}
+function dexView(){const ks=Object.keys(MON);const pr=modal(`<h2>📖 몬스터 도감 (${ks.filter(k=>S.dex[k]).length}/${ks.length})</h2>${S.letter?'<button class="pbtn r" id="ltB" style="margin-bottom:10px">💌 비밀 편지 다시 보기</button>':'<p style="font-size:14px;color:#aab;margin-bottom:8px">도감을 모두 채우면 비밀 편지가 열려요…</p>'}<div class="glist">${ks.map(k=>S.dex[k]?`<div class="gi"><img src="${url(MON[k].spr,4)}" style="width:56px"><br><b style="font-size:15px;display:block">${MON[k].name}</b>${MON[k].tip}<br><small>${HABN[MON[k].hab||'town']} · 물리친 수: ${S.dex[k]}</small></div>`:`<div class="gi no"><img src="${url(MON[k].spr,4)}" style="width:56px;filter:brightness(0)"><br>???<br><small>${HABN[MON[k].hab||'town']}</small></div>`).join('')}</div>`,'닫기');const lb=$('#ltB');if(lb)lb.onclick=()=>{$('#mOk').click();setTimeout(()=>showLetter(false),60)};return pr}
 function shadowBoss(fl){const b=ENEMY.boss,f=1+fl*.12;return {...b,final:false,name:`그림자 노룰 (${fl}층)`,hp:Math.round(80*f),weakDmg:Math.round(30*f),atk:[4+Math.floor(fl/4),7+Math.floor(fl/3)],xp:40,coin:40,noRun:true,
- intro:`🏯 ${fl}층의 주인, 그림자 노룰이 나타났다!`,win:'그림자 노룰이 연기처럼 사라졌다!',schemes:[...shuffle(b.schemes.filter(s=>s.weak)).slice(0,2),b.schemes[4]]}}
-async function stairs(fl){show('mini');$('#mini').innerHTML=`<div class="mg box"><div class="mgt">🏯 ${fl}층으로 올라가는 중…</div><div class="stairs"><img class="climb" src="${url('hero',5)}"></div><div class="fdesc">${fl%5===0?'⚠️ 위층에서 무시무시한 기운이 느껴진다…':'계단 위에서 몬스터가 기다리고 있다!'}</div></div>`;snd('tap');await wait(1500)}
+ intro:`🏯 ${fl}층의 주인, 그림자 노룰이 나타났다!`,win:'그림자 노룰이 연기처럼 사라졌다!',toP3:false,floor:0,schemes:[...shuffle(b.schemes.filter(s=>s.weak)).slice(0,2),ENEMY.bossQ.schemes[0]]}}
+const tSpd=fl=>Math.min(4,1.5+fl*.12);
+async function stairs(fl){show('mini');$('#mini').innerHTML=`<div class="mg box"><div class="mgt">🏯 ${fl}층으로 올라가는 중…</div><div class="stairs"><img class="climb" src="${url('hero',5)}"></div><div class="fdesc">${fl%5===0?'⚠️ 위층에서 무시무시한 기운이 느껴진다…':'계단 위에서 몬스터가 기다리고 있다!'}<br><small style="color:var(--yel)">⚔️ 타이밍 막대 속도 ×${(tSpd(fl)/1.5).toFixed(1)}</small></div></div>`;snd('tap');await wait(1500)}
 async function towerRun(){busy=true;S.hp=maxHP();let fl=1,best=0;
  await choice('🏯 무한의 탑','층마다 몬스터가 기다려요. HP가 0이 되면 도전이 끝나요!<br>한 층을 깰 때마다 HP가 조금 회복돼요. 5층마다 그림자 노룰이 나타나요.',['도전 시작! ▶']);
- while(true){if(fl>1)await stairs(fl);const ks=Object.keys(MON).filter(k=>k!=='gold');const E=fl%5===0?shadowBoss(fl):makeWild(ks[rand(0,ks.length-1)],fl);E.noRun=true;E.noRevive=true;
+ while(true){if(fl>1)await stairs(fl);const ks=Object.keys(MON).filter(k=>k!=='gold');const E=fl%5===0?shadowBoss(fl):makeWild(ks[rand(0,ks.length-1)],fl);E.noRun=true;E.noRevive=true;E.tspd=tSpd(fl);
   const r=await battle(E);if(r.result!=='win')break;best=fl;await dropWeapon(fl%5===0?.6:.15,fl%5===0);if(E.key){S.dex[E.key]=(S.dex[E.key]||0)+1;await checkDex()}
   if(fl>(S.best.tower||0))S.best.tower=fl;if(fl>=10)badge('tower10');save();heal(Math.round(maxHP()*.3));
+  if(fl%10===0){snd('win');await choice(`🏪 ${fl}층 비밀 상점이 열렸다!`,'10층마다 열리는 탑 상점이에요. 모든 아이템 20% 할인!<br>칩의 추천을 보고 다음 층을 준비해요.',['🏪 들어가기']);await openShop({title:`🏪 탑 ${fl}층 비밀 상점`,disc:.8,tower:true,fl})}
   const c=await choice(`🏯 ${fl}층 돌파!`,`HP ${S.hp}/${maxHP()} · 최고 기록 ${S.best.tower}층<br>다음 층으로 올라갈까?`,['⬆ 계속 올라가기','🏠 여기서 멈추기']);if(c!==0)break;fl++}
  S.hp=maxHP();save();await modal(`<h2>🏯 무한의 탑 결과</h2><div class="fdesc">이번 기록: <b style="color:var(--yel)">${best}층</b><br>최고 기록: ${S.best.tower}층</div>`);extraMenu()}
 async function fireChallenge(){busy=true;const bf=S.best.fire;
@@ -1045,7 +1150,7 @@ $('#hBag').onclick=()=>{if(!S)return;snd('tap');const q=nextZone();
 function restart(){if(!confirm('처음부터 다시 할까요? 지금까지의 기록이 지워져요.'))return;try{localStorage.removeItem(KEY)}catch(e){}location.reload()}
 async function startGame(){applySkin();$('#hud').classList.add('on');S.hp=Math.min(S.hp,maxHP());hud();if(S.cleared.boss&&!S.free){ending();return}
  P.x=P.fx=S.pos.x;P.y=P.fy=S.pos.y;C.x=C.fx=P.x;C.y=C.fy=P.y+1<MH&&passable(P.x,P.y+1)?P.y+1:P.y;Z.x=Z.fx=C.x;Z.y=Z.fy=C.y;lastPos={...S.pos};show('world');
- if(!S.intro){busy=true;await talk([['chip','안녕! 나는 수호대 도우미 로봇 칩이야.'],['chip','큰일이야! 노룰 박사가 로봇시티의 규칙 칩을 몽땅 훔쳐 갔어.'],['chip','그 뒤로 로봇들이 아무 명령이나 따르고, 시험장에선 이상한 만점자까지 나타났대.'],['chip','화면을 톡 누르거나 방향키로 움직여. 먼저 ▼ 표시가 있는 🎭 연극 무대로 가자!'],['chip','💡 길에 있는 상자와 사람들도 살펴봐. 숨은 보상이 있을지도!'],['chip','🌿 짙은 풀숲에서는 야생 몬스터가 튀어나와! 바른 답으로 설득해서 물리치자.'],['chip','💡 대사가 길면 오른쪽 위 ⏩ 빠르게 버튼을 눌러 봐. 키보드는 방향키나 WASD로 움직여!']]);S.intro=true;save();busy=false}}
+ if(!S.intro){busy=true;await talk([['chip','안녕! 나는 수호대 도우미 로봇 칩이야.'],['chip','큰일이야! 노룰 박사가 로봇시티의 규칙 칩을 몽땅 훔쳐 갔어.'],['chip','그 뒤로 로봇들이 아무 명령이나 따르고, 시험장에선 이상한 만점자까지 나타났대.'],['chip','화면을 톡 누르거나 방향키로 움직여. 먼저 ▼ 표시가 있는 🎭 연극 무대로 가자!'],['chip','💡 길에 있는 상자와 사람들도 살펴봐. 숨은 보상이 있을지도!'],['chip','🌿 짙은 풀숲에서는 야생 몬스터가 튀어나와! 바른 답으로 설득해서 물리치자.'],['chip','💡 대사가 길면 오른쪽 위 ⏩ 빠르게 버튼을 눌러 봐. 키보드는 방향키나 WASD로 움직여!'],['chip','🔍 방향키 옆 F 버튼(키보드 F)을 누르면 바라보는 칸 하나를 살펴볼 수 있어. 나무, 모래, 건물 벽… 다 눌러 봐!']]);S.intro=true;save();busy=false}}
 initSprites();buildMap();bake();requestAnimationFrame(loop);
 if(CREDIT)$('#credit').textContent='🛠️ 만든 사람 · '+CREDIT;
 $('#tChars').innerHTML=['hero','chip','zero','noroul'].map(k=>`<img src="${url(k,6)}">`).join('');
