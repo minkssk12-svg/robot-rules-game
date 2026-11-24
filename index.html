@@ -60,6 +60,7 @@ body.hurt #app{animation:hurt .35s}
 /* Dialog */
 #dlg{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);width:min(960px,96%);padding:12px 16px;display:none;gap:14px;z-index:20}
 #dlg.on{display:flex}
+.fastb{position:absolute;top:-16px;right:12px;background:var(--yel);color:var(--ink);border:3px solid var(--ink);font-size:14px;padding:2px 10px;z-index:2}
 #dlgP{flex:none;width:clamp(64px,9vw,92px);height:clamp(64px,9vw,92px);background:#29366f;border:3px solid var(--wh)}
 #dlgP img{width:100%;height:100%}
 .dbody{flex:1;min-width:0}
@@ -167,6 +168,7 @@ body.hurt #app{animation:hurt .35s}
 .enemy.flash{filter:brightness(4)}
 .enemy.ko{transition:1s steps(6);transform:translateY(30px) scale(.6);opacity:0}
 .enemy.hit{animation:shake .3s}
+.ekey{margin-top:6px;font-size:15px;color:var(--ink);background:var(--yel);padding:3px 8px;border:2px solid var(--ink);word-break:keep-all}.ekey:empty{display:none}
 .shtag{display:inline-block;margin-left:6px;color:#4ef;font-size:14px}
 .party{position:absolute;left:8%;bottom:6%;display:flex;gap:6px;align-items:flex-end}
 .party img{width:clamp(70px,10vw,112px);animation:bob 1s steps(2) infinite}
@@ -183,6 +185,8 @@ body.hurt #app{animation:hurt .35s}
 
 .fh .fki{display:none;position:absolute;inset:6%;width:88%;animation:bob .3s steps(2) infinite}.fh.fk .fki{display:block}.fh.fk{background:#4b3b8a}
 .fdesc{font-size:clamp(16px,2vw,19px);line-height:1.6;word-break:keep-all}
+.stairs{position:relative;width:min(420px,90%);height:180px;background:linear-gradient(135deg,transparent 49%,#6b5a8a 49% 51%,transparent 51%),repeating-linear-gradient(0deg,#2b1b3d 0 30px,#4b3b5c 30px 36px);border:3px solid var(--wh)}
+.climb{position:absolute;width:64px;left:5%;bottom:0;animation:climb 1.4s steps(7) forwards}@keyframes climb{to{left:78%;bottom:110px}}
 .xm{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
 .xb{background:#29366f;border:3px solid #6b7fd7;padding:12px;text-align:left;color:#fff;display:flex;flex-direction:column;gap:4px}
 .xb b{font-size:clamp(18px,2.2vw,22px);color:var(--yel)}.xb span{font-size:15px;word-break:keep-all}
@@ -243,7 +247,7 @@ body.enc #stage::after{content:'';position:absolute;inset:0;background:#fff;z-in
   <section class="screen" id="mini"></section>
   <section class="screen" id="battle"></section>
   <section class="screen" id="end"></section>
-  <div id="dlg" class="box"><div id="dlgP"></div><div class="dbody"><div id="dlgN"></div><div id="dlgT"></div><div id="dlgC"></div><div class="fb" id="dlgFb"></div></div></div>
+  <div id="dlg" class="box"><button id="fastB" class="fastb">⏩ 빠르게</button><div id="dlgP"></div><div class="dbody"><div id="dlgN"></div><div id="dlgT"></div><div id="dlgC"></div><div class="fb" id="dlgFb"></div></div></div>
  </div>
 </div>
 <div id="modal"></div>
@@ -304,6 +308,7 @@ function initSprites(){
  SPR.tree=mk(RAW.tree,{G:'#3fa34d',L:'#6fd06a',D:'#2a7a3a',T:'#7a4a26'});SPR.chest=mk(RAW.chest,{B:'#8b5a2b',Y:'#ffd23f'});SPR.note=mk(RAW.note,{N:'#2e9e6b'});
  SPR.house=mk(RAW.house,{R:'#d64545',W:'#f5e6c8',B:'#41a6f6',D:'#8b5a2b'});SPR.fire=mk(RAW.fire,{Y:'#ffd23f',O:'#ff8c00',R:'#e74c3c',W:'#fff6a0'});
  SPR.slimeP=mk(RAW.slime,{S:'#9b6bff',W:'#d9c6ff',D:'#6b3fc0',m:'#3d2a5c'});SPR.slimeK=mk(RAW.slime,{S:'#ff8fb8',W:'#ffe0ec',D:'#d64d82',m:'#7a1f45'});SPR.slimeG=mk(RAW.slime,{S:'#ffd23f',W:'#fff6b0',D:'#d49a00',m:'#7a5200'});
+ SPR.slimeO=mk(RAW.slime,{S:'#ff9f43',W:'#ffe0b8',D:'#d86a00',m:'#7a3a00'});SPR.mushP=mk(RAW.mush,{R:'#7b3fb5',S:'#f5e6c8'});SPR.goblinV=mk(HUMAN,{s:'#a98be0',h:'#2a1d3d',t:'#d64545',p:'#3d2a5c',e:'#ffd23f',r:'#8a6bc0',m:'#3d2a5c'});
  SPR.batC=mk(RAW.bat,{B:'#3d2a5c',R:'#ff5a5a'});SPR.batS=mk(RAW.bat,{B:'#6b7f99',R:'#ffd23f'});SPR.mush=mk(RAW.mush,{R:'#d64545',S:'#f5e6c8'});
  SPR.goblin=mk(HUMAN,{s:'#7ccf5a',h:'#3d2a1d',t:'#8b5a2b',p:'#5d4037',e:'#e74c3c',r:'#5aa33a',m:'#2a5a1a'});
  SPR.fake=mk(RAW.fire,{Y:'#d0a8ff',O:'#9b59d0',R:'#6b2fb5',W:'#f0e0ff'});
@@ -315,10 +320,10 @@ function url(k,s=4){const id=k+s;if(URLC[id])return URLC[id];const src=SPR[k],c=
 /* =========== 데이터 =========== */
 const CH={hero:['수호대원(나)','hero'],chip:['칩','chip'],helena:['헬레나','helena'],radius:['라디우스','radius'],patrol:['순찰이','patrol'],truck:['나르미','truck'],noroul:['노룰 박사','noroul'],zero:['만점왕 제로','zero'],guard:['감독 로봇','guard'],stu:['응시생 서윤','stu'],gran:['노트 할머니','gran'],cit1:['주민 다온','cit1'],cit2:['주민 하람','cit2'],merch:['상인 보리','merch'],green:['초록 지붕 주민','cit1'],tower:['경비 로봇','guard']};
 const CARDS={
- obey:{icon:'🤝',name:'올바른 지시 따르기',text:'로봇은 사람의 올바른 지시를 따라야 해요.'},
- fair:{icon:'⚖️',name:'공정한 감시',text:'특정한 사람들만 감시하지 않고 모두를 공정하게 대해요.'},
- check:{icon:'🔍',name:'화물 점검',text:'옮기는 물건을 항상 점검하고, 위험한 물건은 옮기지 않아요.'},
- honest:{icon:'🪽',name:'정직한 AI 사용',text:'시험에서 AI를 몰래 쓰지 않고, 도움받은 부분은 솔직하게 밝혀요.'}};
+ obey:{use:'로봇이 사람의 올바른 지시를 무시하고 제멋대로 할 때',icon:'🤝',name:'올바른 지시 따르기',text:'로봇은 사람의 올바른 지시를 따라야 해요.'},
+ fair:{use:'특정한 사람들만 감시하거나 차별할 때',icon:'⚖️',name:'공정한 감시',text:'특정한 사람들만 감시하지 않고 모두를 공정하게 대해요.'},
+ check:{use:'무엇이 들었는지 확인하지 않고 물건을 옮기려 할 때',icon:'🔍',name:'화물 점검',text:'옮기는 물건을 항상 점검하고, 위험한 물건은 옮기지 않아요.'},
+ honest:{use:'AI를 몰래 쓰거나 답을 베끼려 할 때',icon:'🪽',name:'정직한 AI 사용',text:'시험에서 AI를 몰래 쓰지 않고, 도움받은 부분은 솔직하게 밝혀요.'}};
 const BADGES={stage:['🎭','첫 무대 해결'],fire:['🚒','화재 3단계 마스터'],wild1:['🌿','첫 야생 승리'],scan:['🔎','꼼꼼 검사관'],detect:['🕵️','명탐정'],duel:['⚡','실시간 검증 통과'],notes:['📒','성실한 노력가'],boss:['🏆','노룰 박사 격파'],nodmg:['💎','무피해 수호대'],tower10:['🏯','탑 10층 돌파'],dex:['📖','도감 완성']};
 const ORDER=['stage','patrol','harbor','exam','boss'];
 const BLD=[
@@ -328,12 +333,15 @@ const BLD=[
  {z:'exam',x:19,y:13,w:7,h:4,door:22,roof:'#8e44ad',wall:'#f2ecf7',name:'📝 수호대 시험장',ro:'으로'},
  {z:'boss',x:27,y:12,w:3,h:5,door:28,roof:'#2b1b3d',wall:'#5b3f7a',name:'🏰 노룰 박사 탑',ro:'으로'}];
 const BZ={};BLD.forEach(b=>BZ[b.z]=b);
-const ITEMS=[{id:'c1',t:'chest',x:1,y:1,get:{apple:1,weapon:'ruler'}},{id:'c2',t:'chest',x:30,y:1,get:{coin:30}},{id:'c3',t:'chest',x:12,y:16,get:{apple:1,coin:20}},
+const ITEMS=[{id:'c1',t:'chest',x:1,y:1,get:{apple:1,weapon:'ruler'}},{id:'c2',t:'chest',x:30,y:1,get:{coin:30}},{id:'c3',t:'chest',x:12,y:16,get:{lunch:1,coin:20}},
  {id:'n1',t:'note',x:2,y:4},{id:'n2',t:'note',x:29,y:8},{id:'n3',t:'note',x:18,y:20}];
 const NPCS=[
  {id:'gran',spr:'gran',x:11,y:7},{id:'fan',spr:'cit1',x:14,y:9},{id:'book',spr:'cit2',x:18,y:11},
  {id:'shop',spr:'merch',x:13,y:11},{id:'stu',spr:'stu',x:20,y:19},{id:'tower',spr:'guard',x:27,y:19}];
 const QB={
+ spam:[{q:'"축하합니다! 당첨!" 같은 모르는 링크가 오면?',o:['누르지 않고 보호자나 선생님께 알린다','바로 눌러서 확인한다','친구들에게도 보내 준다']},{q:'모르는 사람이 보낸 파일이나 앱 설치 요청은?',o:['열지 않고 어른께 먼저 여쭤본다','궁금하니까 열어 본다','바로 설치한다']}],
+ troll:[{q:'AI로 친구를 놀리는 글이나 그림을 만들어 올리면?',o:['친구에게 상처를 주는 사이버 폭력이다','장난이니까 괜찮다','AI가 만들었으니 내 책임이 아니다']},{q:'온라인에서 친구와 생각이 다를 때 바른 행동은?',o:['예의 바르게 내 생각을 말한다','욕을 해서 이긴다','여럿이 함께 공격한다']}],
+ over:[{q:'AI 챗봇이나 게임을 바르게 사용하는 방법은?',o:['사용 시간을 정해서 알맞게 쓴다','밤늦게까지 계속 쓴다','숙제보다 먼저 실컷 한다']},{q:'AI 챗봇에게 고민을 말할 때 기억할 점은?',o:['중요한 고민은 믿을 수 있는 어른과도 꼭 이야기한다','AI의 말만 무조건 믿는다','개인정보를 모두 알려 준다']}],
  fake:[{q:'AI가 만든 놀라운 뉴스를 봤을 때 바른 행동은?',o:['다른 믿을 만한 자료로 사실인지 확인한다','바로 친구들에게 퍼뜨린다','제목만 보고 믿는다']},{q:'가짜 뉴스가 퍼지면 공동체에 어떤 일이 생길까?',o:['사람들이 서로 믿지 못하고 다툼이 생긴다','모두가 더 똑똑해진다','아무 일도 생기지 않는다']}],
  deep:[{q:'친구 얼굴로 AI 가짜 영상을 만들어 장난쳐도 될까?',o:['안 된다. 친구에게 상처를 주고 권리를 침해한다','재미있으면 괜찮다','몰래 보면 괜찮다']},{q:'진짜인지 가짜인지 헷갈리는 영상을 봤다면?',o:['출처를 확인하고 함부로 퍼뜨리지 않는다','바로 단체방에 올린다','댓글로 놀린다']}],
  cam:[{q:'AI 카메라로 다른 사람을 허락 없이 찍어 올리면?',o:['다른 사람의 사생활을 침해하는 일이다','찍힌 사람도 좋아한다','아무 문제가 없다']},{q:'순찰 로봇의 카메라는 어떻게 쓰여야 할까?',o:['모두의 안전을 위해 공정하게 쓰여야 한다','특정한 사람만 따라다니며 찍어야 한다','몰래 개인 정보를 모아야 한다']}],
@@ -341,6 +349,9 @@ const QB={
  bias:[{q:'AI가 한쪽으로 치우친 자료로만 배우면 어떻게 될까?',o:['어떤 사람들에게 불공정한 판단을 할 수 있다','언제나 더 공정해진다','아무 영향이 없다']},{q:'AI의 판단이 공정한지 확인하려면?',o:['사람이 다양한 자료로 결과를 점검한다','AI는 항상 옳으니 그대로 믿는다','결과를 아무에게도 보여 주지 않는다']}],
  copy:[{q:'AI가 써 준 글을 숙제로 그대로 내면?',o:['정직하지 않고 내 실력도 늘지 않는다','선생님께 칭찬받는다','실력이 쑥쑥 는다']},{q:'AI 도움을 받아 과제를 했다면?',o:['도움받은 부분을 솔직하게 밝힌다','내가 다 했다고 말한다','친구 숙제도 AI로 만들어 준다']},{q:'진짜 실력 없이 얻은 성취는 무엇과 같을까?',o:['파도 한 번에 무너지는 모래성','단단한 바위','튼튼한 다리']}]};
 const MON={
+ spam:{name:'스팸 슬라임',spr:'slimeO',hp:24,atk:[3,4],xp:18,coin:10,line:'축하합니다! 당첨! 이 링크를 눌러서 선물 받아 가~',tip:'당첨 문자나 모르는 링크는 누르지 말고 어른께 알려요.'},
+ troll:{name:'악플 고블린',spr:'goblinV',hp:28,atk:[3,5],xp:22,coin:12,line:'AI로 친구 놀리는 글 만들어 올리자! 장난인데 뭐 어때~',tip:'AI로 만든 글이라도 상처를 주면 사이버 폭력이에요.'},
+ over:{name:'과몰입 버섯',spr:'mushP',hp:28,atk:[3,5],xp:22,coin:12,line:'밤새도록 AI랑 게임만 하자~ 숙제는 내일 해도 돼~',tip:'AI와 기기는 시간을 정해서 알맞게 써요.'},
  fake:{name:'가짜뉴스 슬라임',spr:'slimeP',hp:22,atk:[2,4],xp:15,coin:8,line:'AI가 만든 엄청난 소식이야! 확인하지 말고 얼른 퍼뜨려~',tip:'놀라운 소식일수록 다른 자료로 꼭 확인해요.'},
  deep:{name:'딥페이크 슬라임',spr:'slimeK',hp:22,atk:[2,4],xp:15,coin:8,line:'친구 얼굴로 가짜 영상 만들어 볼래? 재밌잖아~',tip:'다른 사람 얼굴로 가짜 영상을 만들면 상처를 줘요.'},
  cam:{name:'몰카 박쥐',spr:'batC',hp:24,atk:[3,4],xp:18,coin:10,line:'AI 카메라로 몰래몰래 찰칵찰칵~',tip:'허락 없이 찍고 올리는 건 사생활 침해예요.'},
@@ -348,7 +359,12 @@ const MON={
  bias:{name:'편향 버섯',spr:'mush',hp:26,atk:[3,5],xp:20,coin:12,line:'한쪽 자료만 먹고 자랐지! 내 판단은 무조건 옳아!',tip:'치우친 자료로 배운 AI는 불공정할 수 있어요.'},
  copy:{name:'복붙 고블린',spr:'goblin',hp:26,atk:[3,5],xp:20,coin:12,line:'AI가 써 준 숙제, 그대로 복붙하면 끝! 키키키!',tip:'AI 도움은 솔직하게 밝히고 내 글로 써요.'},
  gold:{name:'황금 슬라임',spr:'slimeG',hp:30,atk:[1,3],xp:40,coin:60,line:'반짝반짝~ 나를 잡으면 코인이 와르르!',tip:'아주 드물게 나타나는 행운의 슬라임!'}};
-const WPN={stick:{i:'🪵',n:'나무 막대',atk:0,d:'처음부터 들고 있는 막대기'},ruler:{i:'📏',n:'정의의 자',atk:3,price:30,d:'공정하게 재는 자'},pencil:{i:'✏️',n:'진실의 연필',atk:5,price:60,d:'내 생각을 내 글로 쓰는 연필'},lamp:{i:'🔦',n:'확인 손전등',atk:7,price:90,d:'숨은 것을 비춰 확인하는 손전등'},hammer:{i:'🔨',n:'공정의 망치',atk:10,price:150,d:'불공정을 깨뜨리는 망치'},sword:{i:'🗡️',n:'규칙의 검',atk:14,d:'노룰 박사를 물리친 수호대의 검 (보스 보상)'}};
+const DF=[{n:'쉬움',i:'😊',hp:1,atk:1,qh:0,coin:1,apple:10,d:'처음 해 보는 친구에게 추천! 몬스터가 약해요.'},{n:'보통',i:'😐',hp:1.35,atk:1.3,qh:3,coin:.8,apple:15,d:'몬스터가 더 튼튼하고, 퀴즈를 틀리면 HP가 3 줄어요.'},{n:'어려움',i:'🔥',hp:1.75,atk:1.6,qh:6,coin:.6,apple:20,d:'진짜 수호대만 도전! 퀴즈를 틀리면 HP가 6 줄고 코인도 적게 받아요.'}];
+const df=()=>DF[S&&S.diff!=null?S.diff:0];
+const RAR={N:['일반','#c0c8d8'],R:['희귀','#41a6f6'],L:['전설','#ffd23f']};
+const ITM={apple:{i:'🍎',n:'에너지 사과',d:'HP +15',price:10},lunch:{i:'🍱',n:'수호대 도시락',d:'HP 모두 회복',price:25},guard:{i:'🛡️',n:'방패 물약',d:'이번 전투에서 받는 피해 절반',price:20},power:{i:'⚡',n:'번개 사탕',d:'이번 전투에서 공격력 +5',price:25},orb:{i:'🔮',n:'지혜의 구슬',d:'야생 몬스터 설득 문제에서 틀린 보기 하나 지우기',price:15}};
+const priceOf=k=>k==='apple'?df().apple:ITM[k].price;
+const WPN={stick:{i:'🪵',n:'나무 막대',atk:0,r:'N',d:'처음부터 들고 있는 막대기'},ruler:{i:'📏',n:'정의의 자',atk:3,r:'N',d:'공정하게 재는 자'},pencil:{i:'✏️',n:'진실의 연필',atk:5,r:'N',price:60,d:'내 생각을 내 글로 쓰는 연필'},lamp:{i:'🔦',n:'확인 손전등',atk:7,r:'R',d:'숨은 것을 비춰 확인하는 손전등'},water:{i:'💦',n:'정의의 물총',atk:8,r:'R',d:'불공정을 시원하게 씻어 내는 물총'},hammer:{i:'🔨',n:'공정의 망치',atk:10,r:'R',price:150,d:'불공정을 깨뜨리는 망치'},laser:{i:'🔴',n:'레이저 포인터',atk:11,r:'R',d:'핵심을 콕 짚어 주는 레이저'},bow:{i:'🏹',n:'팩트체크 활',atk:12,r:'R',price:220,d:'거짓을 꿰뚫는 활'},sword:{i:'🗡️',n:'규칙의 검',atk:14,r:'L',d:'노룰 박사를 물리친 수호대의 검 (보스 보상)'},keyboard:{i:'⚡',n:'번개 키보드',atk:16,r:'L',d:'바른 글만 빛의 속도로 쓰는 키보드 (탑 보상)'},rainbow:{i:'🌈',n:'무지개 날개검',atk:19,r:'L',d:'AI를 날개로 쓰는 수호대의 전설 검 (탑 보상)'}};
 const josa=w=>{const c=w.charCodeAt(w.length-1)-0xAC00;return c>=0&&c%28?'이':'가'};
 const FIRE=[{n:'쉬움',goal:5,time:20,life:2300,spawn:900,max:2,fake:0,d:'불이 난 집을 톡 눌러 꺼요. 20초 안에 5곳!'},{n:'보통',goal:8,time:20,life:1700,spawn:650,max:3,fake:.18,d:'불이 더 빨리 번져요! 🟣보라색 불꽃은 AI 오경보예요. 누르면 2초가 줄어들어요. 진짜 불만 골라 꺼요! 20초 안에 8곳!'},{n:'어려움',goal:12,time:22,life:1250,spawn:470,max:4,fake:.28,d:'여러 곳에서 동시에 불이 나고, AI 오경보도 더 많아요! 22초 안에 12곳!'}];
 const SC=['인공지능 로봇이 사회에 미치는 영향을 이해했나요?','인공지능 로봇의 규칙이 중요한 이유를 설명할 수 있나요?','AI를 마법 지팡이가 아닌 날개로 쓰는 방법을 말할 수 있나요?'];
@@ -357,9 +373,9 @@ const PLEDGE=['먼저 생각하기: AI에게 묻기 전에 내 생각부터 적�
 
 /* =========== 상태 =========== */
 let S,busy=false;
-const fresh=()=>({cleared:{},cards:[],badges:[],xp:0,hp:30,coins:0,items:{apple:2},got:{},notes:0,gran:0,party:[],pos:{x:16,y:12},sound:true,intro:false,endData:null,dex:{},best:{tower:0,fire:[0,0,0]},free:false,weapons:['stick'],weapon:'stick'});
+const fresh=()=>({cleared:{},cards:[],badges:[],xp:0,hp:30,coins:0,items:{apple:2,lunch:0,guard:0,power:0,orb:1},got:{},notes:0,gran:0,party:[],pos:{x:16,y:12},sound:true,intro:false,endData:null,dex:{},best:{tower:0,fire:[0,0,0]},free:false,weapons:['stick'],weapon:'stick',books:0,diff:1,fast:false});
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
-const load=()=>{try{const v=JSON.parse(localStorage.getItem(KEY));return v?Object.assign(fresh(),v):null}catch(e){return null}};
+const load=()=>{try{const v=JSON.parse(localStorage.getItem(KEY));if(!v)return null;const o=Object.assign(fresh(),v);if(v.diff==null)o.diff=0;o.items=Object.assign({apple:0,lunch:0,guard:0,power:0,orb:0},v.items);return o}catch(e){return null}};
 const lv=()=>1+Math.floor(S.xp/100);
 const maxHP=()=>30+6*(lv()-1)+(S.gran===2?10:0);
 const atkStat=()=>2+lv()+(WPN[S.weapon]?.atk||0);
@@ -377,22 +393,25 @@ function show(id){$$('.screen').forEach(s=>s.classList.toggle('on',s.id===id));h
 let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2000)}
 function pop(text,big,el){const e=document.createElement('div');e.className='pop'+(big?' big':'');e.textContent=text;let x=innerWidth/2,y=innerHeight*.3;if(el){const r=el.getBoundingClientRect();x=r.left+r.width/2;y=r.top+r.height*.3}e.style.left=(x-40)+'px';e.style.top=y+'px';document.body.appendChild(e);setTimeout(()=>e.remove(),950)}
 function hud(){$('#hHp i').style.width=clamp(S.hp/maxHP()*100,0,100)+'%';$('#hHpT').textContent=S.hp+'/'+maxHP();$('#hLv').textContent='Lv.'+lv();$('#hXp i').style.width=(S.xp%100)+'%';$('#hCoin').textContent='🪙 '+S.coins;$('#hSnd').textContent=S.sound?'🔊':'🔇';
- const n=nextZone();$('#hMenu').style.display=S.cleared.boss?'':'none';$('#hGoal').textContent=S.free?`📖 도감 ${Object.keys(MON).filter(k=>S.dex[k]).length}/7 · 풀숲을 탐험해요!`:n?'🎯 '+BZ[n].name:'🎯 모든 규칙을 되찾았다!'}
+ const n=nextZone();$('#hMenu').style.display=S.cleared.boss?'':'none';$('#hGoal').textContent=S.free?`📖 도감 ${Object.keys(MON).filter(k=>S.dex[k]).length}/${Object.keys(MON).length} · 풀숲을 탐험해요!`:n?'🎯 '+BZ[n].name:'🎯 모든 규칙을 되찾았다!'}
 function addXP(n){const b=lv();S.xp+=n;pop('+'+n+' XP');const up=lv()-b;if(up>0){S.hp=maxHP();setTimeout(()=>{snd('lv');toast(`⭐ 레벨 업! Lv.${lv()} · 최대 HP·공격력 UP!`)},450)}hud();save();return up}
 function heal(n){S.hp=Math.min(maxHP(),S.hp+n);snd('heal');hud();save()}
+function qHurt(){if(!df().qh)return;S.hp=Math.max(1,S.hp-df().qh);hurtFx();hud();save()}
 function hurtFx(){document.body.classList.add('hurt');setTimeout(()=>document.body.classList.remove('hurt'),350)}
 function badge(id){if(S.badges.includes(id))return;S.badges.push(id);setTimeout(()=>toast(`🏅 배지: ${BADGES[id][0]} ${BADGES[id][1]}`),300);save()}
-function coin(n){S.coins+=n;snd('coin');pop('+'+n+' 🪙');hud();save()}
+function coin(n){n=Math.max(1,Math.round(n*df().coin));S.coins+=n;snd('coin');pop('+'+n+' 🪙');hud();save()}
 function choice(title,html,opts){return new Promise(r=>{const m=$('#modal');m.innerHTML=`<div class="mbox box"><h2>${title}</h2><div class="fdesc">${html}</div><div class="row" style="margin-top:14px">${opts.map((o,i)=>`<button class="pbtn ${i?'w':''}" data-c="${i}">${o}</button>`).join('')}</div></div>`;m.classList.add('on');m.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{snd('tap');m.classList.remove('on');r(+b.dataset.c)})})}
 function modal(html,btn='확인'){return new Promise(r=>{const m=$('#modal');m.innerHTML=`<div class="mbox box">${html}<br><button class="pbtn" id="mOk">${btn}</button></div>`;m.classList.add('on');$('#mOk').onclick=()=>{snd('tap');m.classList.remove('on');r()}})}
 const cardHTML=id=>{const c=CARDS[id];return `<div class="rcard"><div class="ri">${c.icon}</div><div class="rn">${c.name}</div><div class="rt">${c.text}</div></div>`};
-async function gainWeapon(id){if(!S.weapons.includes(id))S.weapons.push(id);const old=WPN[S.weapon].atk;if(WPN[id].atk>old)S.weapon=id;save();snd('win');
- await modal(`<h2>⚔️ 새 무기 획득!</h2><div class="rcard"><div class="ri">${WPN[id].i}</div><div class="rn">${WPN[id].n}</div><div class="rt">공격력 +${WPN[id].atk}<br>${WPN[id].d}</div></div><p style="margin-top:12px;font-size:15px;color:#aab">${S.weapon===id?'자동으로 장착했어요!':'가방에서 장착할 수 있어요.'}</p>`)}
+async function gainWeapon(id,title){if(!S.weapons.includes(id))S.weapons.push(id);const old=WPN[S.weapon].atk;if(WPN[id].atk>old)S.weapon=id;save();snd('win');
+ await modal(`<h2>${title||'⚔️ 새 무기 획득!'}</h2><div class="rcard"><div class="ri">${WPN[id].i}</div><div style="font-size:15px;color:var(--ink);background:${RAR[WPN[id].r][1]};padding:1px 8px;border:2px solid var(--ink)">★ ${RAR[WPN[id].r][0]}</div><div class="rn">${WPN[id].n}</div><div class="rt">공격력 +${WPN[id].atk}<br>${WPN[id].d}</div></div><p style="margin-top:12px;font-size:15px;color:#aab">${S.weapon===id?'자동으로 장착했어요!':'가방에서 장착할 수 있어요.'}</p>`)}
+async function dropWeapon(ch,allowL){if(Math.random()>=ch)return;const pool=Object.keys(WPN).filter(k=>k!=='stick'&&k!=='sword'&&!S.weapons.includes(k)&&(allowL||WPN[k].r!=='L'));
+ if(!pool.length){coin(20);return}const w=pool[rand(0,pool.length-1)];await gainWeapon(w,'🎁 몬스터가 무기를 떨어뜨렸다!')}
 async function gainCard(id){if(!S.cards.includes(id))S.cards.push(id);save();snd('win');await modal(`<h2>🃏 규칙 카드 획득!</h2>${cardHTML(id)}<p style="margin-top:12px;font-size:15px;color:#aab">전투에서 '규칙 카드'로 쓸 수 있어요.</p>`)}
 
 /* =========== 대화 =========== */
 const dlg=$('#dlg');let typing=null,typeEl=null;
-function typeText(el,text){clearInterval(typing);typeEl={el,text};el.textContent='';let i=0;return new Promise(res=>{typeEl.res=res;typing=setInterval(()=>{i++;el.textContent=text.slice(0,i);if(i>=text.length){clearInterval(typing);typing=null;res()}},26)})}
+function typeText(el,text){if(S&&S.fast){clearInterval(typing);typing=null;el.textContent=text;return Promise.resolve()}clearInterval(typing);typeEl={el,text};el.textContent='';let i=0;return new Promise(res=>{typeEl.res=res;typing=setInterval(()=>{i++;el.textContent=text.slice(0,i);if(i>=text.length){clearInterval(typing);typing=null;res()}},26)})}
 function finishType(){if(!typing)return false;clearInterval(typing);typing=null;typeEl.el.textContent=typeEl.text;typeEl.res();return true}
 function setDlg(who,text){const c=CH[who];$('#dlgP').innerHTML=`<img src="${url(c[1],4)}">`;$('#dlgN').textContent=c[0];$('#dlgC').innerHTML='';$('#dlgFb').textContent='';dlg.classList.add('on');return typeText($('#dlgT'),text)}
 function hideDlg(){dlg.classList.remove('on','tap');dlg.onclick=null}
@@ -404,11 +423,11 @@ function ask(who,q,opts,multi=false){return new Promise(r=>{
  sh.forEach(o=>{const b=document.createElement('button');b.className='ch';b.textContent=o.t;o.b=b;
   b.onclick=e=>{e.stopPropagation();finishType();if(multi){snd('tap');b.classList.toggle('sel');return}
    if(o.ok){snd('ok');b.classList.add('right');finish(o.fb||'정답이야!')}
-   else{first=false;snd('bad');b.classList.add('wrong');b.disabled=true;$('#dlgFb').textContent=o.fb||'다시 생각해 봐!'}};C.appendChild(b)});
+   else{first=false;snd('bad');qHurt();b.classList.add('wrong');b.disabled=true;$('#dlgFb').textContent=(o.fb||'다시 생각해 봐!')+(df().qh?` (HP -${df().qh})`:'')}};C.appendChild(b)});
  if(multi){const s=document.createElement('button');s.className='pbtn';s.textContent='✔ 다 골랐어요';
   s.onclick=e=>{e.stopPropagation();finishType();const good=sh.every(o=>o.b.classList.contains('sel')===!!o.ok);
    if(good){snd('ok');sh.filter(o=>o.ok).forEach(o=>o.b.classList.add('right'));finish('모두 찾았어!')}
-   else{first=false;snd('bad');$('#dlgFb').textContent='빠졌거나 틀린 게 있어. 다시 골라 봐!'}};C.appendChild(s)}})}
+   else{first=false;snd('bad');qHurt();$('#dlgFb').textContent='빠졌거나 틀린 게 있어. 다시 골라 봐!'+(df().qh?` (HP -${df().qh})`:'')}};C.appendChild(s)}})}
 
 /* =========== 월드 맵 =========== */
 const MW=32,MH=22,D4=[[1,0],[-1,0],[0,1],[0,-1]];
@@ -473,14 +492,14 @@ function maybeEncounter(){if(!S.intro||busy)return;stepCnt++;const c=MAP[P.y][P.
  if(Math.random()<(tall?.17:.035)*(S.free?1.6:1)){stepCnt=0;encounter()}}
 function pickMon(){if(Math.random()<.06)return 'gold';const k=Object.keys(MON).filter(k=>k!=='gold');return k[rand(0,k.length-1)]}
 function makeWild(k,fl=0){const m=MON[k],f=1+fl*.18;return {key:k,wild:true,name:m.name+(fl?` (${fl}층)`:''),spr:m.spr,bg:fl?'tower':'grass',hp:Math.round(m.hp*f),weakDmg:Math.round(16*f),atk:[m.atk[0]+Math.floor(fl/3),m.atk[1]+Math.floor(fl/2)],xp:m.xp,coin:m.coin,
- intro:fl?`🏯 ${fl}층! ${m.name}${josa(m.name)} 앞을 막아섰다!`:`앗! 야생의 ${m.name}${josa(m.name)} 나타났다!`,win:`${m.name}${josa(m.name)} 반성하며 사라졌다.`,schemes:[{line:m.line}],qs:shuffle(k==='gold'?Object.values(QB).flat():QB[k])}}
+ intro:fl?`🏯 ${fl}층! ${m.name}${josa(m.name)} 앞을 막아섰다!`:`앗! 야생의 ${m.name}${josa(m.name)} 나타났다!`,win:`${m.name}${josa(m.name)} 반성하며 사라졌다.`,schemes:[{line:m.line,key:'💬 설득하기로 바른 답을 말해 보호막을 깨자!'}],qs:shuffle(k==='gold'?Object.values(QB).flat():QB[k])}}
 function checkDex(){if(Object.keys(MON).every(k=>S.dex[k]))badge('dex')}
 async function encounter(){busy=true;P.path=[];P.after=null;held=null;document.body.classList.add('enc');snd('enc');await wait(750);document.body.classList.remove('enc');
- const k=pickMon();const r=await battle(makeWild(k));if(r.result==='win'){S.dex[k]=(S.dex[k]||0)+1;badge('wild1');checkDex()}save();show('world');hud();busy=false}
+ const k=pickMon();const r=await battle(makeWild(k));if(r.result==='win'){S.dex[k]=(S.dex[k]||0)+1;badge('wild1');checkDex();await dropWeapon(k==='gold'?.5:.08,false)}save();show('world');hud();busy=false}
 function stepBack(){if(!lastPos)lastPos={x:P.x,y:P.y+1};P.x=P.fx=lastPos.x;P.y=P.fy=lastPos.y;S.pos={...lastPos};save()}
 function pickItem(it){S.got[it.id]=1;
  if(it.t==='note'){S.notes++;snd('coin');toast(`📒 노력의 노트를 찾았다! (${S.notes}/3)`+(S.gran?'':' 누구의 노트일까?'))}
- else{const g=it.get;let m='📦 보물상자! ';if(g.apple){S.items.apple+=g.apple;m+=`🍎 사과 ${g.apple}개 `}if(g.coin){S.coins+=g.coin;m+=`🪙 ${g.coin}코인`}snd('coin');toast(m);if(g.weapon&&!S.weapons.includes(g.weapon)){busy=true;gainWeapon(g.weapon).then(()=>busy=false)}}
+ else{const g=it.get;let m='📦 보물상자! ';if(g.apple){S.items.apple+=g.apple;m+=`🍎 사과 ${g.apple}개 `}if(g.lunch){S.items.lunch+=g.lunch;m+=`🍱 도시락 ${g.lunch}개 `}if(g.coin){S.coins+=g.coin;m+=`🪙 ${g.coin}코인`}snd('coin');toast(m);if(g.weapon&&!S.weapons.includes(g.weapon)){busy=true;gainWeapon(g.weapon).then(()=>busy=false)}}
  hud();save()}
 function resize(){const cv=$('#cv'),w=cv.parentElement;cv.width=w.clientWidth;cv.height=w.clientHeight;SCL=Math.max(2,Math.floor(Math.min(cv.width/(16*14),cv.height/(16*8.5))))}
 addEventListener('resize',()=>{if($('#world').classList.contains('on'))resize()});
@@ -501,13 +520,14 @@ function render(){const cv=$('#cv'),x=cv.getContext('2d'),cw=cv.width,ch=cv.heig
  ents.sort((a,b)=>a.e.fy-b.e.fy).forEach(o=>drawEnt(x,o.e,o.s));
  NPCS.forEach(n=>{if(npcAlert(n)){const X=n.x*16+6,Y=n.y*16-8-(Math.floor(anim*4)%2);x.fillStyle='#1a1c2c';x.fillRect(X-1,Y-1,6,9);x.fillStyle='#ffd23f';x.fillRect(X,Y,4,5);x.fillRect(X,Y+6,4,1)}});
  x.setTransform(1,0,0,1,0,0);const fs=Math.max(13,Math.round(SCL*3.2));x.font=`${fs}px Galmuri11, monospace`;x.textAlign='center';x.textBaseline='middle';
+ if(!S.free&&nz){const b=BZ[nz],tx=(b.door*16+8-cx)*SCL,ty=((b.y+b.h)*16+8-cy)*SCL;if(tx<0||ty<0||tx>cw||ty>ch){const mg=46,ex=clamp(tx,mg,cw-mg),ey=clamp(ty,mg,ch-mg);x.save();x.translate(ex,ey);x.rotate(Math.atan2(ty-ey,tx-ex));x.fillStyle='#ffd23f';x.strokeStyle='#1a1c2c';x.lineWidth=4;x.beginPath();x.moveTo(24,0);x.lineTo(-12,-18);x.lineTo(-12,18);x.closePath();x.stroke();x.fill();x.restore();x.lineWidth=5;x.strokeStyle='#1a1c2c';x.strokeText('목표',ex,ey+(ey>ch/2?-34:34));x.fillStyle='#ffd23f';x.fillText('목표',ex,ey+(ey>ch/2?-34:34))}}
  BLD.forEach(b=>{const sx=(b.x*16+b.w*8-cx)*SCL,sy=(b.y*16-cy)*SCL-fs*.9;const w=x.measureText(b.name).width+14;
   x.fillStyle='#1a1c2c';x.fillRect(sx-w/2-3,sy-fs*.75-3,w+6,fs*1.5+6);x.fillStyle=b.z===nz?'#ffd23f':'#f4f4f4';x.fillRect(sx-w/2,sy-fs*.75,w,fs*1.5);x.fillStyle='#1a1c2c';x.fillText(b.name,sx,sy+1)})}
 let lastT=0;function loop(t){const dt=Math.min(.05,(t-lastT)/1000||0);lastT=t;anim+=dt;if($('#world').classList.contains('on')){update(dt);render()}requestAnimationFrame(loop)}
 $('#cv').addEventListener('pointerdown',e=>{const r=e.currentTarget.getBoundingClientRect();const wx=(e.clientX-r.left)/SCL+CAM.x,wy=(e.clientY-r.top)/SCL+CAM.y;goTile(Math.floor(wx/16),Math.floor(wy/16))});
 $$('#dpad button[data-d]').forEach(b=>{const d=b.dataset.d.split(',').map(Number);b.addEventListener('pointerdown',e=>{e.preventDefault();P.path=[];P.after=null;held=d});['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,()=>{if(held===d)held=null}))});
-addEventListener('keydown',e=>{const d={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]}[e.key];if(d&&$('#world').classList.contains('on')){e.preventDefault();P.path=[];held=d}});
-addEventListener('keyup',e=>{if(e.key.startsWith('Arrow'))held=null});
+addEventListener('keydown',e=>{const d={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]}[e.key]||{KeyW:[0,-1],KeyS:[0,1],KeyA:[-1,0],KeyD:[1,0]}[e.code];if(d&&$('#world').classList.contains('on')){e.preventDefault();P.path=[];held=d}});
+addEventListener('keyup',e=>{if(e.key.startsWith('Arrow')||['KeyW','KeyA','KeyS','KeyD'].includes(e.code))held=null});
 
 /* =========== NPC =========== */
 function npcAlert(n){if(n.id==='gran')return S.gran===0||(S.gran===1&&S.notes>=3);if(n.id==='stu')return !S.cleared.exam&&S.cleared.harbor;return false}
@@ -524,12 +544,17 @@ async function granTalk(){
  if(S.gran===1&&S.notes<3){await talk([['gran',`노트는 ${S.notes}권 찾았구나. 조금만 더 부탁해!`]]);return}
  if(S.gran===1){S.gran=2;S.hp=maxHP();badge('notes');addXP(30);await talk([['gran','고맙구나! 하루아침에 만든 실력은 모래성 같지만,'],['gran','매일 조금씩 쌓은 노력은 절대 무너지지 않는단다.'],['chip','할머니가 힘을 나눠 주셨어! 최대 HP가 10 늘었어! ❤']]);hud();return}
  await talk([['gran','오늘도 한 걸음씩! 응원한다, 수호대원.']])}
-function shopTalk(){return new Promise(r=>{const m=$('#modal');const draw=()=>{const ws=['ruler','pencil','lamp','hammer'];
- m.innerHTML=`<div class="mbox box"><h2>🛒 보리네 가게</h2><p style="font-size:17px">🪙 ${S.coins}코인 · 🍎 ${S.items.apple}개 · 장착: ${WPN[S.weapon].i} ${WPN[S.weapon].n}</p>
- <h3>🍎 회복</h3><div class="shopi"><span>🍎 에너지 사과 (HP +15)</span><button class="pbtn g" data-buy="apple" ${S.coins<10?'disabled':''}>10🪙</button></div>
- <h3>⚔️ 무기</h3>${ws.map(w=>`<div class="shopi"><span>${WPN[w].i} ${WPN[w].n} <small>공격력 +${WPN[w].atk}</small></span>${S.weapons.includes(w)?'<b style="color:var(--grn)">보유 중</b>':`<button class="pbtn g" data-buy="${w}" ${S.coins<WPN[w].price?'disabled':''}>${WPN[w].price}🪙</button>`}</div>`).join('')}
+function shopTalk(){return new Promise(r=>{const m=$('#modal');const draw=()=>{const ws=['pencil','hammer','bow'],row=(key,icon,name,desc,price,owned)=>`<div class="shopi"><span>${icon} ${name} <small>${desc}</small></span>${owned?`<b style="color:var(--grn)">${owned}</b>`:`<button class="pbtn g" data-buy="${key}" ${S.coins<price?'disabled':''}>${price}🪙</button>`}</div>`;
+ m.innerHTML=`<div class="mbox box"><h2>🛒 보리네 가게</h2><p style="font-size:17px">🪙 ${S.coins}코인 · 장착: ${WPN[S.weapon].i} ${WPN[S.weapon].n} (공격력 ${atkStat()})</p>
+ <h3>🍎 회복·전투 아이템</h3>${Object.keys(ITM).map(k=>row(k,ITM[k].i,ITM[k].n,`${ITM[k].d} · 보유 ${S.items[k]||0}`,priceOf(k),'')).join('')}
+ <h3>📚 성장</h3>${row('book','📚','지식의 책',`읽으면 경험치 +40 (최대 3권, ${S.books}/3)`,50,S.books>=3?'품절':'')}
+ <h3>⚔️ 무기</h3>${ws.map(w=>row(w,WPN[w].i,WPN[w].n,`공격력 +${WPN[w].atk}`,WPN[w].price,S.weapons.includes(w)?'보유 중':'')).join('')}
  <br><button class="pbtn w" id="bye">나가기</button></div>`;
- m.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const k=b.dataset.buy;if(k==='apple'){S.coins-=10;S.items.apple++}else{S.coins-=WPN[k].price;S.weapons.push(k);if(WPN[k].atk>WPN[S.weapon].atk)S.weapon=k;toast(`⚔️ ${WPN[k].n} 구입! 자동 장착했어요.`)}snd('coin');hud();save();draw()});
+ m.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const k=b.dataset.buy;
+  if(ITM[k]){if(S.coins<priceOf(k))return;S.coins-=priceOf(k);S.items[k]=(S.items[k]||0)+1}
+  else if(k==='book'){if(S.coins<50||S.books>=3)return;S.coins-=50;S.books++;addXP(40);toast('📚 지식의 책을 읽었다! 경험치 +40')}
+  else{if(S.coins<WPN[k].price||S.weapons.includes(k))return;S.coins-=WPN[k].price;S.weapons.push(k);if(WPN[k].atk>WPN[S.weapon].atk)S.weapon=k;toast(`⚔️ ${WPN[k].n} 구입! 자동 장착했어요.`)}
+  snd('coin');hud();save();draw()});
  $('#bye').onclick=()=>{snd('tap');m.classList.remove('on');r()}};draw();m.classList.add('on')})}
 /* =========== 존 입장 =========== */
 async function arrive(z){
@@ -576,7 +601,7 @@ function scanGame(){show('mini');return new Promise(res=>{let i=0,correct=0,comb
   <div class="mgs">📦 ${i+1} / ${boxes.length} · ✅ ${correct} · 🔥 콤보 ${combo}${combo>=2?' (보너스!)':''}</div>
   <div class="belt"><div class="scan slidein"><div class="cargo" id="sBox"><img src="${url('box',6)}"></div><div><div class="lbl">🏷️ 라벨: <b>${b.l}</b></div><div class="lbl ai ${b.ai==='안전'?'ok':'no'}">🤖 AI 판정: ${b.ai}</div><div class="sres" id="sRes">아직 직접 확인하지 않았어요</div></div></div></div>
   <div class="fb" id="sFb"></div><div class="row" id="sRow"><button class="pbtn b" id="sScan">🔦 직접 확인하기</button></div></div>`;
-  const judge=v=>{if(v===b.d){if(first){correct++;combo++;maxC=Math.max(maxC,combo);if(combo>=2){bonus+=combo;pop('콤보 x'+combo+'!',true)}}snd('ok');
+  const judge=v=>{if(v===b.d){if(first){correct++;combo++;maxC=Math.max(maxC,combo);if(combo>=2){bonus+=2;pop('콤보 x'+combo+'!',true)}}snd('ok');
     $('#sFb').textContent=(b.d?'멈춤! ':'통과! ')+(b.w||'안전한 물건이에요.');$$('#sRow .pbtn').forEach(x=>x.disabled=true);$('#sBox').classList.add(b.d?'stop':'go');
     setTimeout(()=>{i++;i<boxes.length?draw():result()},b.w?2100:1000)}
    else{first=false;combo=0;snd('bad');hurtFx();$('#sFb').textContent=b.d?'앗! 위험한 상자예요. 다시 생각해 봐요!':'이 물건은 안전해요. 다시 생각해 봐요!'}};
@@ -585,7 +610,7 @@ function scanGame(){show('mini');return new Promise(res=>{let i=0,correct=0,comb
     $('#sRow').innerHTML='<button class="pbtn g" id="sPass">✅ 옮겨요</button><button class="pbtn r" id="sStop">✋ 멈춰요</button>';$('#sPass').onclick=()=>judge(0);$('#sStop').onclick=()=>judge(1)},800)}};
  const result=()=>{const sec=Math.round((Date.now()-t0)/1000),perfect=correct===boxes.length;
   $('#mini').innerHTML=`<div class="mg box"><div class="mgt">📋 화물 검사 결과</div><div class="fdesc">정확도 <b style="color:var(--yel)">${correct} / ${boxes.length}</b> · 최대 콤보 ${maxC} · ${sec}초<br>콤보 보너스 🪙 ${bonus}코인!<br>${perfect?'⭐ 완벽해요! 꼼꼼 검사관 인정!':correct>=8?'👍 아주 잘했어요!':'👌 수고했어요!'}</div><button class="pbtn" id="sDone">계속 ▶</button></div>`;
-  $('#sDone').onclick=()=>{snd('tap');if(bonus)coin(bonus);res({correct,perfect})}};
+  $('#sDone').onclick=e=>{const b=e.currentTarget;if(b.disabled)return;b.disabled=true;b.onclick=null;snd('tap');if(bonus)coin(bonus);res({correct,perfect})}};
  draw()})}
 function clueGame(){show('mini');return new Promise(res=>{let found=0,miss=0;
  const spots=[{img:'zero',n:'제로의 모자',c:1,t:'모자 속에 아주 작은 카메라가 숨겨져 있어! 문제를 찍어서 AI에게 보낸 걸까?'},{img:'note',n:'제로의 공부법 책',c:1,t:'같은 문장이 계속 반복되고 내용이 텅 비었어. AI로 급하게 만든 책 같아.'},{em:'📝',n:'제로의 답안지',c:1,t:'답을 여러 번 고친 흔적이 있어. 누군가 알려 준 답으로 바꾼 걸까?'},{em:'🗄️',n:'책상 서랍',c:0,t:'연필과 지우개뿐이야. 수상한 건 없어.'}];
@@ -606,63 +631,66 @@ function duelGame(){show('mini');return new Promise(async res=>{let score=0;
   const to=setTimeout(()=>fin(false),15000);
   shuffle(q.o).forEach(t=>{const b=document.createElement('button');b.className='cmd q';b.textContent=t;b.onclick=()=>fin(t===q.o[0]);$('#dO').appendChild(b)})})}
  $('#mini').innerHTML=`<div class="mg box"><div class="mgt">📋 실시간 검증 결과</div><div class="duel"><div class="dside"><img src="${url('hero',6)}"><b style="font-size:24px">수호대원 ${score} / 3</b></div><div class="dside"><img src="${url('zero',6)}" style="filter:grayscale(.7)"><b style="font-size:24px">만점왕 제로 0 / 3</b></div></div><div class="dq">AI 안경 없이 직접 푸는 순간, 만들어진 만점은 단 한 번에 무너졌다.</div><button class="pbtn" id="dGo">계속 ▶</button></div>`;
- $('#dGo').onclick=()=>{snd('tap');res(score)}})}
+ $('#dGo').onclick=e=>{e.currentTarget.disabled=true;e.currentTarget.onclick=null;snd('tap');res(score)}})}
 function hallGame(){show('mini');return new Promise(res=>{let on=true,seen=false;
  const R=[['stu','응시생들','각자 공부한 실력으로 문제를 풀어요.','모두 AI 안경을 몰래 쓰고 문제를 풀어요!'],[null,'점수표','점수가 그 사람의 진짜 실력을 보여 줘요.','점수를 아무도 믿을 수 없게 돼요!','📊'],['cit1','정직하게 공부한 친구','노력한 만큼 좋은 결과를 받아요.','열심히 공부했는데 오히려 떨어져요…'],['guard','로봇시티','실력 있는 수호대가 마을을 지켜요.','실력 없는 수호대가 위험한 일을 맡게 돼요!']];
  $('#mini').innerHTML=`<div class="mg box"><div class="mgt">🌀 시험장의 규칙 스위치! 껐다 켜며 비교해 봐요</div><div class="hall on" id="hall">${R.map(r=>`<div class="hr">${r[0]?`<img src="${url(r[0],3)}">`:`<span class="em">${r[4]}</span>`}<div><b>${r[1]}</b><p class="pon">${r[2]}</p><p class="poff">${r[3]}</p></div></div>`).join('')}</div><div class="row"><button class="sw on" id="sw"><i></i><b id="swT">규칙 ON</b></button><button class="pbtn" id="swDone" disabled>다 봤어요 👀</button></div></div>`;
  $('#sw').onclick=()=>{on=!on;snd(on?'ok':'hit');$('#sw').classList.toggle('on',on);$('#hall').classList.toggle('on',on);$('#swT').textContent=on?'규칙 ON':'규칙 OFF';if(!on&&!seen){seen=true;setTimeout(()=>$('#swDone').disabled=false,1500)}};
- $('#swDone').onclick=()=>{snd('tap');res()}})}
+ $('#swDone').onclick=e=>{e.currentTarget.disabled=true;e.currentTarget.onclick=null;snd('tap');res()}})}
 
 /* =========== 턴제 전투 =========== */
-function battle(E){return new Promise(async done=>{show('battle');const st={ehp:E.hp,si:0,shield:true,turn:0,dmg:0,qi:0,used:new Set()};
+function battle(E){E={...E,hp:Math.round(E.hp*df().hp)};return new Promise(async done=>{show('battle');const st={ehp:E.hp,si:0,shield:true,turn:0,dmg:0,qi:0,used:new Set()};
  const party=['hero','chip'].concat(S.party);
- $('#battle').innerHTML=`<div class="field ${E.bg}"><div class="est box"><b>${E.name}</b><span class="shtag" id="eSh">🛡️ 규칙 파괴 보호막</span><div class="bar"><i id="eHp"></i></div></div>
+ $('#battle').innerHTML=`<div class="field ${E.bg}"><div class="est box"><b>${E.name}</b><span class="shtag" id="eSh">🛡️ 규칙 파괴 보호막</span><div class="bar"><i id="eHp"></i></div><div class="ekey" id="eKey"></div></div>
   <img class="enemy" id="eImg" src="${url(E.spr,8)}"><div class="party">${party.map(p=>`<img src="${url(p,6)}">`).join('')}</div>
   <div class="pst box"><b id="pLv">수호대원 Lv.${lv()}</b> <small id="pHpT"></small><div class="bar"><i id="pHp"></i></div><div class="bar xpb"><i id="pXp"></i></div><small id="pAtk"></small></div></div>
   <div class="bbot"><div class="box" id="bLog"></div><div id="bCmd"></div></div>`;
  const cur=()=>E.schemes[st.si];
- const upd=()=>{const q=!!cur().quiz;$('#eHp').style.width=clamp(st.ehp/E.hp*100,0,100)+'%';$('#eSh').style.display=st.shield&&!q?'':'none';$('#eImg').classList.toggle('shield',st.shield&&!q);$('#pHp').style.width=clamp(S.hp/maxHP()*100,0,100)+'%';$('#pHpT').textContent=`HP ${S.hp}/${maxHP()}`;$('#pLv').textContent='수호대원 Lv.'+lv();$('#pXp').style.width=(S.xp%100)+'%';$('#pAtk').textContent=`공격력 ${atkStat()} · ${WPN[S.weapon].i} ${WPN[S.weapon].n} · XP ${S.xp%100}/100`;hud()};
+ const upd=()=>{const q=!!cur().quiz;$('#eKey').textContent=cur().key?'📢 '+cur().key:'';$('#eHp').style.width=clamp(st.ehp/E.hp*100,0,100)+'%';$('#eSh').style.display=st.shield&&!q?'':'none';$('#eImg').classList.toggle('shield',st.shield&&!q);$('#pHp').style.width=clamp(S.hp/maxHP()*100,0,100)+'%';$('#pHpT').textContent=`HP ${S.hp}/${maxHP()}`;$('#pLv').textContent='수호대원 Lv.'+lv();$('#pXp').style.width=(S.xp%100)+'%';$('#pAtk').textContent=`공격력 ${atkStat()} · ${WPN[S.weapon].i} ${WPN[S.weapon].n} · XP ${S.xp%100}/100`;hud()};
  const log=t=>new Promise(r=>{$('#bCmd').innerHTML='';const L=$('#bLog');L.classList.add('tap');typeText(L,t);L.onclick=()=>{if(finishType())return;snd('tap');L.onclick=null;L.classList.remove('tap');r()}});
  const hitE=(d,big)=>{st.ehp=Math.max(0,st.ehp-d);const e=$('#eImg');e.classList.remove('hit','flash');void e.offsetWidth;e.classList.add('hit');if(d>0){e.classList.add('flash');setTimeout(()=>e.classList.remove('flash'),120)}pop((big?'💥 ':'')+d,big,e);snd(big?'crit':'hit');upd()};
  const command=sc=>new Promise(r=>{const B=$('#bCmd');const btn=(html,cls,fn,dis)=>{const b=document.createElement('button');b.className='cmd '+(cls||'');b.innerHTML=html;b.disabled=!!dis;b.onclick=()=>{snd('tap');fn()};B.appendChild(b)};
-  const persuade=()=>{B.innerHTML='';const Q=E.qs[st.qi++%E.qs.length];$('#bLog').textContent='💬 '+Q.q;shuffle(Q.o).forEach(t=>btn(t,'q full',()=>r({t:'persuade',ok:t===Q.o[0],ans:Q.o[0]})));btn('↩ 뒤로','full',main)};
-  const main=()=>{B.innerHTML='';if(E.wild){btn(`⚔️ 공격 ${WPN[S.weapon].i}`,'',()=>r({t:'atk'}));btn('💬 설득하기','',persuade,!st.shield);btn(`🍎 사과 (${S.items.apple})`,'',()=>r({t:'item'}),S.items.apple<1||S.hp>=maxHP());btn('🏃 도망','',()=>r({t:'run'}),E.noRun);return}
+  const persuade=()=>{B.innerHTML='';const Q=E.qs[st.qi++%E.qs.length];$('#bLog').textContent='💬 '+Q.q;let opts=Q.o;if(st.orb){opts=[Q.o[0],Q.o[1+rand(0,Q.o.length-2)]];st.orb=false;$('#bLog').textContent+=' (🔮 틀린 보기 하나가 사라졌다!)'}shuffle(opts).forEach(t=>btn(t,'q full',()=>r({t:'persuade',ok:t===Q.o[0],ans:Q.o[0]})));btn('↩ 뒤로','full',main)};
+  const main=()=>{B.innerHTML='';if(E.wild){btn(`⚔️ 공격 ${WPN[S.weapon].i}`,'',()=>r({t:'atk'}));btn('💬 설득하기','',persuade,!st.shield);btn('🎒 아이템','',items,!Object.keys(ITM).some(k=>S.items[k]>0));btn('🏃 도망','',()=>r({t:'run'}),E.noRun);return}
    if(sc.quiz){shuffle(sc.quiz).forEach(o=>btn(o.t,'q full',()=>r({t:'quiz',ok:o.ok})));return}
-   btn(`⚔️ 공격 ${WPN[S.weapon].i}`,'',()=>r({t:'atk'}));btn('🃏 규칙 카드','',cards,!E.final&&S.cards.every(c=>st.used.has(c)));btn(`🍎 사과 (${S.items.apple})`,'',()=>r({t:'item'}),S.items.apple<1||S.hp>=maxHP());btn('💡 칩의 힌트','',()=>r({t:'hint'}))};
-  const cards=()=>{B.innerHTML='';$('#bLog').textContent=E.final?'🃏 최종 보스전! 규칙 카드를 몇 번이든 쓸 수 있어요.':'🃏 규칙 카드는 이 전투에서 한 장당 한 번만 쓸 수 있어요. 신중하게!';S.cards.forEach(id=>{const u=!E.final&&st.used.has(id);btn(`${CARDS[id].icon} <b>${CARDS[id].name}</b>${u?' (사용함)':''}`,'card',()=>r({t:'card',id}),u)});btn('↩ 뒤로','full',main)};main()});
+   btn(`⚔️ 공격 ${WPN[S.weapon].i}`,'',()=>r({t:'atk'}));btn('🃏 규칙 카드','',cards,!E.final&&S.cards.every(c=>st.used.has(c)));btn('🎒 아이템','',items,!Object.keys(ITM).some(k=>S.items[k]>0));btn('💡 칩의 힌트','',()=>r({t:'hint'}))};
+  const itemOff=k=>(k==='apple'||k==='lunch')?S.hp>=maxHP():k==='guard'?!!st.guard:k==='power'?!!st.pow:(!E.wild||!!st.orb||!st.shield);
+  const items=()=>{B.innerHTML='';$('#bLog').textContent='🎒 사용할 아이템을 골라요.';Object.keys(ITM).forEach(k=>{if(!(S.items[k]>0))return;const it=ITM[k];
+   btn(`${it.i} ${it.n} ×${S.items[k]}<br><small>${it.d}</small>`,'',()=>r({t:'item',k}),itemOff(k))});btn('↩ 뒤로','full',main)};
+  const cards=()=>{B.innerHTML='';$('#bLog').textContent=E.final?'🃏 최종 보스전! 규칙 카드를 몇 번이든 쓸 수 있어요.':'🃏 규칙 카드는 이 전투에서 한 장당 한 번만 쓸 수 있어요. 신중하게!';S.cards.forEach(id=>{const u=!E.final&&st.used.has(id);btn(`${CARDS[id].icon} <b>${CARDS[id].name}</b>${u?' (사용함)':''}<br><small style="font-size:13px;color:#556">${CARDS[id].use}</small>`,'card',()=>r({t:'card',id}),u)});btn('↩ 뒤로','full',main)};main()});
  upd();await log(E.intro);
  while(st.ehp>0){const sc=cur();
   await log(`${E.name}: “${sc.line}”`+(st.shield&&!sc.quiz?(E.wild?' (💬 설득해서 보호막을 깨자!)':' (알맞은 규칙 카드로 보호막을 깨자!)'):''));
   let a;while(true){$('#bLog').textContent=sc.quiz?'⬇ 마지막 한 방! 알맞은 대답을 골라요.':E.wild&&st.shield?'⬇ 💬 설득하기로 바른 답을 말해 보호막을 깨자!':'⬇ 무엇을 할까?';a=await command(sc);if(a.t!=='hint')break;await log('🤖 칩: “'+sc.hint+'”')}
-  if(a.t==='atk'){if(st.shield){hitE(1);await log('⚔️ 공격! 하지만 보호막 때문에 1 피해밖에 못 줬다…')}else{const d=rand(4,6)+atkStat(),cr=Math.random()<.15,dd=cr?Math.round(d*1.6):d;hitE(dd,cr);await log(`⚔️ ${WPN[S.weapon].i} ${WPN[S.weapon].n}(으)로 공격! ${cr?'치명타! ':''}${dd} 피해!`)}}
+  if(a.t==='atk'){if(st.shield){hitE(1);await log('⚔️ 공격! 하지만 보호막 때문에 1 피해밖에 못 줬다…')}else{const d=rand(4,6)+atkStat()+(st.pow||0),cr=Math.random()<.15,dd=cr?Math.round(d*1.6):d;hitE(dd,cr);await log(`⚔️ ${WPN[S.weapon].i} ${WPN[S.weapon].n}(으)로 공격! ${cr?'치명타! ':''}${dd} 피해!`)}}
   else if(a.t==='card'){const c=CARDS[a.id];st.used.add(a.id);
    if(a.id===sc.weak){st.shield=false;hitE(E.weakDmg,true);await log(`${c.icon} 「${c.name}」 발동! 보호막이 깨졌다! 효과는 굉장했다!`);
     if(st.si<E.schemes.length-1){st.si++;st.shield=!E.schemes[st.si].quiz}}
-   else{hitE(0);snd('bad');await log(`${c.icon} 「${c.name}」 발동! …이 상황에는 효과가 없는 것 같다.`)}}
+   else{hitE(0);snd('bad');await log(`${c.icon} 「${c.name}」 발동! …효과가 없다!`);await log(`🤖 칩: “「${c.name}」은(는) ${c.use} 쓰는 카드야. 📢 노란 상황 설명을 다시 읽어 봐!”`)}}
   else if(a.t==='persuade'){if(a.ok){st.shield=false;hitE(E.weakDmg,true);await log('💬 설득 성공! 보호막이 깨졌다! 효과는 굉장했다!')}else{snd('bad');await log(`💬 설득 실패… 정답은 「${a.ans}」였어.`)}}
   else if(a.t==='run'){snd('tap');await log('🏃 무사히 도망쳤다!');done({dmg:st.dmg,result:'run'});return}
-  else if(a.t==='item'){S.items.apple--;heal(15);upd();await log('🍎 에너지 사과를 먹었다! HP가 15 회복됐다.')}
+  else if(a.t==='item'){S.items[a.k]--;if(a.k==='apple'){heal(15);upd();await log('🍎 에너지 사과를 먹었다! HP가 15 회복됐다.')}else if(a.k==='lunch'){heal(999);upd();await log('🍱 수호대 도시락을 먹었다! HP가 모두 회복됐다.')}else if(a.k==='power'){st.pow=5;snd('heal');await log('⚡ 번개 사탕을 먹었다! 이번 전투에서 공격력 +5!')}else if(a.k==='orb'){st.orb=true;snd('heal');await log('🔮 지혜의 구슬이 빛난다! 다음 설득 문제에서 틀린 보기 하나가 사라진다.')}else{st.guard=true;snd('heal');await log('🛡️ 방패 물약을 마셨다! 이번 전투에서 받는 피해가 절반이 된다.')}save()}
   else if(a.t==='quiz'){if(a.ok){hitE(st.ehp,true);await log('💥 결정타! 규칙이 왜 중요한지 똑똑히 보여 줬다!')}else{snd('bad');await log('박사: “흥, 그런 말에 넘어갈 줄 알고?” 다시 생각해 보자!')}}
   if(st.ehp>0&&S.party.includes('zero')&&(a.t==='atk'||a.t==='card')&&!st.shield){hitE(5);await log('👑 제로의 “진짜 실력” 펀치! 5 피해!')}
   upd();if(st.ehp<=0)break;
   st.turn++;if(st.turn%3===0){heal(5);upd();await log('🤖 칩의 응원! HP가 5 회복됐다.')}
-  const d=rand(E.atk[0],E.atk[1]);S.hp-=d;st.dmg+=d;hurtFx();snd('hit');upd();await log(`${E.name}의 공격! ${d} 피해를 입었다!`);
+  const d0=Math.round(rand(E.atk[0],E.atk[1])*df().atk),d=st.guard?Math.max(1,Math.ceil(d0/2)):d0;S.hp-=d;st.dmg+=d;hurtFx();snd('hit');upd();await log(`${E.name}의 공격! ${d} 피해를 입었다!`);
   if(S.hp<=0&&E.noRevive){S.hp=0;upd();await log('수호대원이 쓰러졌다… 하지만 잘 싸웠어!');done({dmg:st.dmg,result:'lose'});return}
-  if(S.hp<=0){S.hp=maxHP();upd();snd('heal');await log('쓰러질 뻔했지만… 칩이 에너지를 가득 채워 줬다! 다시 힘내자!')}}
+  if(S.hp<=0){S.hp=S.diff===2?Math.ceil(maxHP()/2):maxHP();upd();snd('heal');await log('쓰러질 뻔했지만… 칩이 에너지를 가득 채워 줬다! 다시 힘내자!')}}
  $('#eImg').classList.add('ko');snd('win');await log(E.win);const up=addXP(E.xp);coin(E.coin);upd();await log(`🏆 승리! 경험치 ${E.xp}와 ${E.coin}코인을 얻었다.`);if(up>0){snd('lv');await log(`⭐ 레벨 업! Lv.${lv()}이 되었다! 최대 HP와 공격력이 올랐다!`)}save();done({dmg:st.dmg,result:'win'})})}
 const ENEMY={
  drone:{name:'폭주 감시드론',spr:'drone',bg:'city',hp:44,weakDmg:24,atk:[3,5],xp:40,coin:20,intro:'노룰 박사가 조종하는 폭주 감시드론이 나타났다!',win:'감시드론이 멈췄다. 순찰이가 제정신을 찾았다!',
-  schemes:[{line:'초록 지붕 동네 사람들만 감시! 감시! 하루 종일 감시!',weak:'fair',hint:'특정한 사람들만 감시하는 건 공정할까? 그 규칙 카드를 써 봐!'}]},
+  schemes:[{key:'특정한 동네 사람들만 감시하려고 해!',line:'초록 지붕 동네 사람들만 감시! 감시! 하루 종일 감시!',weak:'fair',hint:'특정한 사람들만 감시하는 건 공정할까? 그 규칙 카드를 써 봐!'}]},
  mimic:{name:'몰래상자 미믹',spr:'mimic',bg:'port',hp:48,weakDmg:26,atk:[3,6],xp:40,coin:20,intro:'상자가 입을 쩍 벌렸다! 몰래상자 미믹이 나타났다!',win:'미믹이 얌전한 빈 상자로 돌아갔다.',
-  schemes:[{line:'내 안에 뭐가 들었는지는 비밀~ 확인하지 말고 그냥 옮겨!',weak:'check',hint:'옮기는 물건은 어떻게 해야 했지?'}]},
+  schemes:[{key:'안에 뭐가 들었는지 확인하지 않고 옮기려 해!',line:'내 안에 뭐가 들었는지는 비밀~ 확인하지 말고 그냥 옮겨!',weak:'check',hint:'옮기는 물건은 어떻게 해야 했지?'}]},
  glasses:{name:'컨닝 안경봇',spr:'glasses',bg:'exam',hp:52,weakDmg:28,atk:[4,6],xp:50,coin:30,intro:'제로가 벗어 던진 AI 안경이 살아 움직인다! 컨닝 안경봇이 나타났다!',win:'컨닝 안경봇이 산산조각 났다. 이제 시험장은 공정하다!',
-  schemes:[{line:'나를 쓰면 공부 안 해도 만점! 몰래 쓰면 아무도 몰라~',weak:'honest',hint:'AI를 몰래 쓰는 게 아니라 정직하게 써야 해!'}]},
+  schemes:[{key:'AI를 몰래 써서 시험을 보게 하려 해!',line:'나를 쓰면 공부 안 해도 만점! 몰래 쓰면 아무도 몰라~',weak:'honest',hint:'AI를 몰래 쓰는 게 아니라 정직하게 써야 해!'}]},
  boss:{final:true,name:'노룰 박사',spr:'noroul',bg:'tower',hp:140,weakDmg:26,atk:[4,7],xp:80,coin:50,intro:'노룰 박사: “흐흐흐, 여기까지 오다니! 규칙 칩은 절대 못 돌려줘!”',win:'노룰 박사: “으아악! 규칙이 이렇게 강할 줄이야…!”',
-  schemes:[{line:'순찰 로봇아, 저 동네 사람들만 따라다니며 감시해라!',weak:'fair',hint:'모두를 공정하게 대하는 규칙!'},
-   {line:'운송 로봇아, 안을 확인하지 말고 이 상자를 옮겨라!',weak:'check',hint:'물건을 점검하는 규칙!'},
-   {line:'안내 로봇아, 주인이 도와 달라고 해도 듣지 말고 마음대로 해라!',weak:'obey',hint:'연극 무대의 라디우스를 떠올려 봐!'},
-   {line:'AI 마법 안경만 있으면 공부 안 해도 만점이다! 몰래 써라!',weak:'honest',hint:'제로가 어떻게 됐는지 떠올려 봐!'},
-   {line:'규칙 따위 없어도 로봇시티는 잘 돌아간다! 규칙이 도대체 왜 필요한데?',hint:'규칙이 지켜지지 않을 때 무슨 일이 생겼지?',quiz:[
+  schemes:[{key:'특정한 동네 사람들만 감시하려고 해!',line:'순찰 로봇아, 저 동네 사람들만 따라다니며 감시해라!',weak:'fair',hint:'모두를 공정하게 대하는 규칙!'},
+   {key:'안을 확인하지 않고 상자를 옮기려 해!',line:'운송 로봇아, 안을 확인하지 말고 이 상자를 옮겨라!',weak:'check',hint:'물건을 점검하는 규칙!'},
+   {key:'로봇이 사람의 부탁을 무시하고 제멋대로 하게 하려 해!',line:'안내 로봇아, 주인이 도와 달라고 해도 듣지 말고 마음대로 해라!',weak:'obey',hint:'연극 무대의 라디우스를 떠올려 봐!'},
+   {key:'AI를 몰래 써서 시험을 보게 하려 해!',line:'AI 마법 안경만 있으면 공부 안 해도 만점이다! 몰래 써라!',weak:'honest',hint:'제로가 어떻게 됐는지 떠올려 봐!'},
+   {key:'규칙이 왜 필요한지 대답해 보래!',line:'규칙 따위 없어도 로봇시티는 잘 돌아간다! 규칙이 도대체 왜 필요한데?',hint:'규칙이 지켜지지 않을 때 무슨 일이 생겼지?',quiz:[
     {t:'규칙이 지켜져야 사람들이 안전하게 생활할 수 있어요!',ok:1},{t:'규칙이 없으면 로봇과 AI를 잘못 이용하는 사람이 생겨요!',ok:1},
     {t:'규칙은 귀찮으니까 없어도 괜찮아요.'},{t:'AI는 원래 똑똑해서 규칙이 필요 없어요.'}]}]}};
 
@@ -759,7 +787,7 @@ function oath(){const d=S.endData;
 function enterWorld(){P.x=P.fx=S.pos.x;P.y=P.fy=S.pos.y;P.path=[];P.after=null;C.x=C.fx=P.x;C.y=C.fy=P.y;Z.x=Z.fx=P.x;Z.y=Z.fy=P.y;C.moving=Z.moving=P.moving=false;lastPos={...S.pos};show('world');hud()}
 function extraMenu(){busy=false;S.free=false;save();hud();show('mini');const d=Object.keys(MON).filter(k=>S.dex[k]).length,bf=S.best.fire;
  $('#mini').innerHTML=`<div class="mg box"><div class="mgt">🎮 수호대 보너스 콘텐츠</div><div class="fdesc">활동을 마친 수호대원을 위한 추가 모험! (🎮 버튼으로 언제든 돌아올 수 있어요)</div><div class="xm">
- <button class="xb" data-x="free"><b>🗺️ 자유 탐험</b><span>야생 몬스터가 더 자주 나와요. 풀숲을 누비며 몬스터 도감을 채워요! (${d}/7)</span></button>
+ <button class="xb" data-x="free"><b>🗺️ 자유 탐험</b><span>야생 몬스터가 더 자주 나와요. 풀숲을 누비며 몬스터 도감을 채워요! (${d}/${Object.keys(MON).length})</span></button>
  <button class="xb" data-x="tower"><b>🏯 무한의 탑</b><span>쓰러질 때까지 몇 층이나 올라갈 수 있을까? 5층마다 그림자 노룰 등장! (최고 ${S.best.tower}층)</span></button>
  <button class="xb" data-x="fire"><b>🔥 화재 출동 챌린지</b><span>제한 시간 동안 최대한 많이! 최고 기록 쉬움 ${bf[0]} · 보통 ${bf[1]} · 어려움 ${bf[2]}</span></button>
  <button class="xb" data-x="dex"><b>📖 몬스터 도감</b><span>만난 몬스터와 AI 윤리 꿀팁 보기</span></button>
@@ -768,10 +796,11 @@ function extraMenu(){busy=false;S.free=false;save();hud();show('mini');const d=O
 function dexView(){const ks=Object.keys(MON);return modal(`<h2>📖 몬스터 도감 (${ks.filter(k=>S.dex[k]).length}/${ks.length})</h2><div class="glist">${ks.map(k=>S.dex[k]?`<div class="gi"><img src="${url(MON[k].spr,4)}" style="width:56px"><br><b style="font-size:15px;display:block">${MON[k].name}</b>${MON[k].tip}<br><small>물리친 수: ${S.dex[k]}</small></div>`:`<div class="gi no"><img src="${url(MON[k].spr,4)}" style="width:56px;filter:brightness(0)"><br>???</div>`).join('')}</div>`,'닫기')}
 function shadowBoss(fl){const b=ENEMY.boss,f=1+fl*.12;return {...b,final:false,name:`그림자 노룰 (${fl}층)`,hp:Math.round(80*f),weakDmg:Math.round(30*f),atk:[4+Math.floor(fl/4),7+Math.floor(fl/3)],xp:40,coin:40,noRun:true,
  intro:`🏯 ${fl}층의 주인, 그림자 노룰이 나타났다!`,win:'그림자 노룰이 연기처럼 사라졌다!',schemes:[...shuffle(b.schemes.filter(s=>s.weak)).slice(0,2),b.schemes[4]]}}
+async function stairs(fl){show('mini');$('#mini').innerHTML=`<div class="mg box"><div class="mgt">🏯 ${fl}층으로 올라가는 중…</div><div class="stairs"><img class="climb" src="${url('hero',5)}"></div><div class="fdesc">${fl%5===0?'⚠️ 위층에서 무시무시한 기운이 느껴진다…':'계단 위에서 몬스터가 기다리고 있다!'}</div></div>`;snd('tap');await wait(1500)}
 async function towerRun(){busy=true;S.hp=maxHP();let fl=1,best=0;
  await choice('🏯 무한의 탑','층마다 몬스터가 기다려요. HP가 0이 되면 도전이 끝나요!<br>한 층을 깰 때마다 HP가 조금 회복돼요. 5층마다 그림자 노룰이 나타나요.',['도전 시작! ▶']);
- while(true){const ks=Object.keys(MON).filter(k=>k!=='gold');const E=fl%5===0?shadowBoss(fl):makeWild(ks[rand(0,ks.length-1)],fl);E.noRun=true;E.noRevive=true;
-  const r=await battle(E);if(r.result!=='win')break;best=fl;if(E.key){S.dex[E.key]=(S.dex[E.key]||0)+1;checkDex()}
+ while(true){if(fl>1)await stairs(fl);const ks=Object.keys(MON).filter(k=>k!=='gold');const E=fl%5===0?shadowBoss(fl):makeWild(ks[rand(0,ks.length-1)],fl);E.noRun=true;E.noRevive=true;
+  const r=await battle(E);if(r.result!=='win')break;best=fl;await dropWeapon(fl%5===0?.6:.15,fl%5===0);if(E.key){S.dex[E.key]=(S.dex[E.key]||0)+1;checkDex()}
   if(fl>(S.best.tower||0))S.best.tower=fl;if(fl>=10)badge('tower10');save();heal(Math.round(maxHP()*.3));
   const c=await choice(`🏯 ${fl}층 돌파!`,`HP ${S.hp}/${maxHP()} · 최고 기록 ${S.best.tower}층<br>다음 층으로 올라갈까?`,['⬆ 계속 올라가기','🏠 여기서 멈추기']);if(c!==0)break;fl++}
  S.hp=maxHP();save();await modal(`<h2>🏯 무한의 탑 결과</h2><div class="fdesc">이번 기록: <b style="color:var(--yel)">${best}층</b><br>최고 기록: ${S.best.tower}층</div>`);extraMenu()}
@@ -783,23 +812,25 @@ $('#hMenu').onclick=()=>{if(busy||!S.cleared.boss)return;snd('tap');extraMenu()}
 /* =========== 가방 =========== */
 $('#hBag').onclick=()=>{if(!S)return;snd('tap');const q=nextZone();
  const html=`<h2>🎒 가방</h2><h3>📜 퀘스트</h3><div class="ql">⭐ 메인: ${q?BZ[q].name+'에서 규칙 칩 되찾기':'완료!'}<br>📒 노트 할머니: ${S.gran===0?'(마을의 할머니에게 말을 걸어 봐요)':S.gran===1?`노력의 노트 찾기 ${S.notes}/3`:'완료!'}</div>
- <h3>📖 몬스터 도감 ${Object.keys(MON).filter(k=>S.dex[k]).length}/7 <button class="pbtn b" id="dexB" style="padding:3px 10px;font-size:14px">보기</button></h3><h3>⚔️ 무기 (공격력 ${atkStat()})</h3><div class="glist">${S.weapons.map(w=>`<button class="gi" data-eq="${w}" style="color:#fff;${S.weapon===w?'border-color:var(--yel);background:#5a4a00':''}"><b>${WPN[w].i}</b>${WPN[w].n}<br><small>+${WPN[w].atk} ${S.weapon===w?'· 장착 중':'· 눌러서 장착'}</small></button>`).join('')}</div><h3>🍎 아이템</h3><div class="ql">에너지 사과 ${S.items.apple}개 · 🪙 ${S.coins}코인 ${S.items.apple&&S.hp<maxHP()?'<button class="pbtn g" id="eat" style="padding:4px 10px;font-size:15px">먹기</button>':''}</div>
+ <h3>📖 몬스터 도감 ${Object.keys(MON).filter(k=>S.dex[k]).length}/${Object.keys(MON).length} <button class="pbtn b" id="dexB" style="padding:3px 10px;font-size:14px">보기</button></h3><h3>⚔️ 무기 (공격력 ${atkStat()}) · ${df().i} ${df().n} 모드</h3><div class="glist">${S.weapons.map(w=>`<button class="gi" data-eq="${w}" style="color:#fff;${S.weapon===w?'border-color:var(--yel);background:#5a4a00':''}"><b>${WPN[w].i}</b>${WPN[w].n}<br><small style="color:${RAR[WPN[w].r][1]}">★${RAR[WPN[w].r][0]}</small> <small>+${WPN[w].atk} ${S.weapon===w?'· 장착 중':'· 눌러서 장착'}</small></button>`).join('')}</div><h3>🎒 아이템 · 🪙 ${S.coins}코인</h3><div class="ql">${Object.keys(ITM).map(k=>`${ITM[k].i} ${ITM[k].n} ${S.items[k]||0}개 <small>(${ITM[k].d})</small>${(k==='apple'||k==='lunch')&&S.items[k]>0&&S.hp<maxHP()?` <button class="pbtn g" data-eat="${k}" style="padding:3px 10px;font-size:14px">먹기</button>`:''}`).join('<br>')}</div>
  <h3>🃏 규칙 카드</h3><div class="glist">${Object.keys(CARDS).map(id=>S.cards.includes(id)?`<div class="gi"><b>${CARDS[id].icon}</b>${CARDS[id].name}</div>`:'<div class="gi no"><b>❔</b>???</div>').join('')}</div>
  <h3>🏅 배지</h3><div class="glist">${Object.keys(BADGES).map(id=>S.badges.includes(id)?`<div class="gi"><b>${BADGES[id][0]}</b>${BADGES[id][1]}</div>`:'<div class="gi no"><b>❔</b>???</div>').join('')}</div>`;
- modal(html,'닫기');document.querySelectorAll('[data-eq]').forEach(b=>b.onclick=()=>{S.weapon=b.dataset.eq;save();snd('ok');$('#modal').classList.remove('on');toast(`⚔️ ${WPN[S.weapon].n} 장착!`)});const dx=$('#dexB');if(dx)dx.onclick=()=>{$('#modal').classList.remove('on');dexView()};const e=$('#eat');if(e)e.onclick=()=>{S.items.apple--;heal(15);$('#modal').classList.remove('on');toast('🍎 HP가 15 회복됐다!')}};
+ modal(html,'닫기');document.querySelectorAll('[data-eq]').forEach(b=>b.onclick=()=>{S.weapon=b.dataset.eq;save();snd('ok');$('#modal').classList.remove('on');toast(`⚔️ ${WPN[S.weapon].n} 장착!`)});const dx=$('#dexB');if(dx)dx.onclick=()=>{$('#modal').classList.remove('on');dexView()};const e=$('#eat');document.querySelectorAll('[data-eat]').forEach(b=>b.onclick=()=>{const k=b.dataset.eat;S.items[k]--;heal(k==='apple'?15:999);$('#modal').classList.remove('on');toast(`${ITM[k].i} HP가 회복됐다!`)})};
 
 /* =========== 시작 =========== */
 function restart(){if(!confirm('처음부터 다시 할까요? 지금까지의 기록이 지워져요.'))return;try{localStorage.removeItem(KEY)}catch(e){}location.reload()}
 async function startGame(){$('#hud').classList.add('on');S.hp=Math.min(S.hp,maxHP());hud();if(S.cleared.boss&&!S.free){ending();return}
  P.x=P.fx=S.pos.x;P.y=P.fy=S.pos.y;C.x=C.fx=P.x;C.y=C.fy=P.y+1<MH&&passable(P.x,P.y+1)?P.y+1:P.y;Z.x=Z.fx=C.x;Z.y=Z.fy=C.y;lastPos={...S.pos};show('world');
- if(!S.intro){busy=true;await talk([['chip','안녕! 나는 수호대 도우미 로봇 칩이야.'],['chip','큰일이야! 노룰 박사가 로봇시티의 규칙 칩을 몽땅 훔쳐 갔어.'],['chip','그 뒤로 로봇들이 아무 명령이나 따르고, 시험장에선 이상한 만점자까지 나타났대.'],['chip','화면을 톡 누르거나 방향키로 움직여. 먼저 ▼ 표시가 있는 🎭 연극 무대로 가자!'],['chip','💡 길에 있는 상자와 사람들도 살펴봐. 숨은 보상이 있을지도!'],['chip','🌿 짙은 풀숲에서는 야생 몬스터가 튀어나와! 바른 답으로 설득해서 물리치자.']]);S.intro=true;save();busy=false}}
+ if(!S.intro){busy=true;await talk([['chip','안녕! 나는 수호대 도우미 로봇 칩이야.'],['chip','큰일이야! 노룰 박사가 로봇시티의 규칙 칩을 몽땅 훔쳐 갔어.'],['chip','그 뒤로 로봇들이 아무 명령이나 따르고, 시험장에선 이상한 만점자까지 나타났대.'],['chip','화면을 톡 누르거나 방향키로 움직여. 먼저 ▼ 표시가 있는 🎭 연극 무대로 가자!'],['chip','💡 길에 있는 상자와 사람들도 살펴봐. 숨은 보상이 있을지도!'],['chip','🌿 짙은 풀숲에서는 야생 몬스터가 튀어나와! 바른 답으로 설득해서 물리치자.'],['chip','💡 대사가 길면 오른쪽 위 ⏩ 빠르게 버튼을 눌러 봐. 키보드는 방향키나 WASD로 움직여!']]);S.intro=true;save();busy=false}}
 initSprites();buildMap();bake();requestAnimationFrame(loop);
 if(CREDIT)$('#credit').textContent='🛠️ 만든 사람 · '+CREDIT;
 $('#tChars').innerHTML=['hero','chip','zero','noroul'].map(k=>`<img src="${url(k,6)}">`).join('');
 S=load()||fresh();if(load()?.intro)$('#bCont').style.display='';
-$('#bNew').onclick=()=>{if($('#bCont').style.display===''&&!confirm('처음부터 새로 시작할까요? 이어하던 기록은 지워져요.'))return;S=fresh();save();snd('tap');startGame()};
-$('#bCont').onclick=()=>{S=load();snd('tap');startGame()};
+$('#bNew').onclick=async()=>{if($('#bCont').style.display===''&&!confirm('처음부터 새로 시작할까요? 이어하던 기록은 지워져요.'))return;S=fresh();snd('tap');const d=await choice('⚔️ 난이도를 골라요',DF.map(x=>`${x.i} <b>${x.n}</b> : ${x.d}`).join('<br>'),DF.map((x,i)=>`${x.i} ${x.n}${i===1?' (추천)':''}`));S.diff=d;save();fastLbl();toast(`${DF[d].i} ${DF[d].n} 모드로 시작해요!`);startGame()};
+$('#bCont').onclick=()=>{S=load();fastLbl();snd('tap');startGame()};
 $('#hSnd').onclick=()=>{S.sound=!S.sound;save();hud();snd('tap')};$('#hRe').onclick=restart;
+const fastLbl=()=>$('#fastB').textContent=S&&S.fast?'▶ 보통 속도':'⏩ 빠르게';
+$('#fastB').onclick=e=>{e.stopPropagation();if(!S)return;S.fast=!S.fast;save();fastLbl();finishType();snd('tap')};
 if(document.fonts)document.fonts.ready.then(()=>{});
 window.__G={QB,goto:z=>{const b=BZ[z];goTile(b.door,b.y+b.h)},walk:goTile,S:()=>S,idle:()=>!busy&&!P.moving&&!P.path.length&&!P.after};
 </script>
